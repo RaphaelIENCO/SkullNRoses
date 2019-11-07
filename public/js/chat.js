@@ -14,6 +14,11 @@ document.addEventListener("DOMContentLoaded",function(e) {
     var inputMessage = document.getElementById('monMessage');
     var modalIMG = document.getElementById('bcImage');
     var resultIMG = document.getElementById('bcResults');
+    var btnInvite = document.getElementById('btnInviter');
+    var menuInvite = document.getElementById('bcMenuInvite');
+    var listeConnecteInvite = document.getElementById('bcListeConnecte');
+    var listeRejointInvite = document.getElementById('bcListeRejoint');
+    var btnFermerInvite = document.getElementById('btnFermerMenuInvite');
     var pseudo;
     var usersOnline = [];
 
@@ -22,6 +27,8 @@ document.addEventListener("DOMContentLoaded",function(e) {
     BtnImage.addEventListener('click',envoiIMG);
     BtnFermer.addEventListener('click',fermerIMG);
     BtnRechercher.addEventListener('click',rechercheIMG);
+    btnInvite.addEventListener('click',afficheInvite);
+    btnFermerInvite.addEventListener('click',fermerInvite);
 
     // image s'envoie direct apres selection
 
@@ -59,6 +66,36 @@ document.addEventListener("DOMContentLoaded",function(e) {
         };
         socket.emit("message",obj);
         inputMessage.value = "";
+    }
+
+    function afficheInvite (){
+        menuInvite.style.display = "block";
+        usersOnline.forEach(function (user) {
+            let div = document.createElement("div");
+            div.id=user+"Name";
+            div.innerText = user;
+            let button = document.createElement("input");
+            button.id=user+"Btn";
+            button.type = "button"
+            button.value="INVITER";
+
+            button.addEventListener('click',function(){
+                console.log("inviter");
+                let div1 = document.createElement("div");
+                div1.innerText = user;
+                listeRejointInvite.appendChild(div1);
+                div.removeChild(button);
+            });
+
+            div.appendChild(button);
+            listeConnecteInvite.appendChild(div);
+        });
+    }
+
+    function fermerInvite(){
+        listeConnecteInvite.innerHTML = "<h4>Joueurs connectés</h4>";
+        listeRejointInvite.innerHTML = "<h4>Joueurs en salle d'attente</h4>";
+        menuInvite.style.display = "none";
     }
 
     function envoiIMG(){

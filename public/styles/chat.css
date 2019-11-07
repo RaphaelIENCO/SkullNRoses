@@ -208,7 +208,7 @@ input[type=radio]:checked + div {
     background-color: white;
     overflow: scroll;
 }
-#bcImage #bcResults {
+#bcImage #bcResults{
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -221,4 +221,25 @@ input[type=radio]:checked + div {
     height: auto;
     cursor: pointer;
     align-self: center;
+}
+
+#bcListeConnecte, #bcListeRejoint {
+    float: left;
+    width: 50%;
+    height: 80%;
+    border: 1px solid black;
+    overflow: scroll;
+}
+
+#bcMenuInvite {
+    width: 600px;
+    height: 80%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    background: lightblue;
+    border: solid 1px #333;
+    box-shadow: 10px 10px 10px #000;
+    border-radius: 5px;
 }
