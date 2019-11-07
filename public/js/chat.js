@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
     var btnFermerInvite = document.getElementById('btnFermerMenuInvite');
     var pseudo;
     var usersOnline = [];
+    //slt
 
     divBtnConnecter.addEventListener('click',connect);
     BtnEnvoyer.addEventListener('click',envoiMSG);
