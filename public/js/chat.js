@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
     var menuInvite = document.getElementById('bcMenuInvite');
     var listeConnecteInvite = document.getElementById('bcListeConnecte');
     var listeRejointInvite = document.getElementById('bcListeRejoint');
+    var listeRejointF = document.getElementById('bcListeF');
     var btnFermerInvite = document.getElementById('btnFermerMenuInvite');
     var pseudo;
     var usersOnline = [];
@@ -78,7 +79,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
                 div.innerText = user;
                 let button = document.createElement("input");
                 button.id=user+"Btn";
-                button.type = "button"
+                button.type = "button";
                 button.value="INVITER";
 
                 button.addEventListener('click',function(){
@@ -99,6 +100,18 @@ document.addEventListener("DOMContentLoaded",function(e) {
     }
 
     function fermerInvite(){
+        let listeJoueurs = [];
+        listeRejointF.childNodes.forEach(function (div) {
+            if(div.innerText != undefined){
+                listeJoueurs.push(div.innerText);
+            }
+        });
+        let annul = {
+            from : pseudo,
+            listeJoueurs : listeJoueurs
+        };
+        console.log(annul);
+        socket.emit("annulPartie",annul);
         listeConnecteInvite.innerHTML = "<h4>Joueurs connectés</h4>";
         listeRejointInvite.innerHTML = "<h4>Joueurs en salle d'attente</h4>";
         menuInvite.style.display = "none";
@@ -262,6 +275,6 @@ document.addEventListener("DOMContentLoaded",function(e) {
         console.log(result);
         let div = document.createElement("div");
         div.innerText = result.to;
-        listeRejointInvite.appendChild(div);
+        listeRejointF.appendChild(div);
     });
 });
