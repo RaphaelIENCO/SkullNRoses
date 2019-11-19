@@ -226,6 +226,37 @@ document.addEventListener("DOMContentLoaded",function(e) {
     });
 
     socket.on("invitation",function(invit){
-        console.log(invit);
+        var div = document.createElement("div");
+        div.style.color = "red";
+        div.innerText = "[admin] "+ invit.from + " vous a envoyé une invitation à jouer ! ";
+        var buttonAccept = document.createElement("button");
+        buttonAccept.innerText = "Accepter";
+        buttonAccept.addEventListener("click",function () {
+            let result = {
+                "from" :invit.from,
+                "to" : invit.to,
+                "result" : true
+            };
+            socket.emit("resultInvitation",result);
+            div.removeChild(buttonAccept);
+            div.removeChild(buttonRefus);
+            div.innerText += " Accepté !";
+        });
+        var buttonRefus = document.createElement("button");
+        buttonRefus.innerText = "Refuser";
+        buttonRefus.addEventListener("click",function () {
+            let result = {
+                "from" :invit.from,
+                "to" : invit.to,
+                "result" : false
+            };
+            socket.emit("resultInvitation",result);
+            div.removeChild(buttonAccept);
+            div.removeChild(buttonRefus);
+            div.innerText += " Refusé !";
+        });
+        div.appendChild(buttonAccept);
+        div.appendChild(buttonRefus);
+        main.appendChild(div);
     });
 });
