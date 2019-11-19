@@ -106,6 +106,17 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
         }
         console.log("Client déconnecté");
     });
-    
-    
+
+    socket.on("invitation",function(invit) {
+        // une invitation est reçu
+        let from = invit.from; let to = invit.to;
+        // verif si les deux sont connectés
+        if(clients.includes(from) && clients.includes(to)){
+            console.log("-> broadcast invitation");
+            socket.broadcast.emit("invitation",invit);
+        }else if(clients.includes(from)){ // si le destinataire n'est pas connecté
+            console.log("-> broadcast resultInvitation");
+            socket.broadcast.emit("resultInvitation",null);
+        } // sinon on n'ignore l'invitation comme l'hote de la partie est déconnecté
+    });
 });
