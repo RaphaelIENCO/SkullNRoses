@@ -138,7 +138,4 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
             clients[to].emit("resultInvitation",resultInvit);
         }
     });
-
-
-
 });

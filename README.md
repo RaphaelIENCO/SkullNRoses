@@ -7,6 +7,8 @@ Implémentation du jeu Skull N Roses en Javascript.
         - le joueur ayant reçu l'invitation peut continuer d'en accepter d'autre ou de créer d'autre 
         parties
         - le joueur ayant reçu l'invit sera informé si la partie est annulée sinon la partie se lance chez lui.
+    - si l'hote appuye sur "annuler" la partie est annulé, il doit donc rester sur l'onglet de création de partie.
+    S'il annule la partie un message est envoyé a tout ceux "dans" la salle d'attente
     - demarre la partie avec nbr de joueurs ayant rejoint (mais pas tout seul)
 
 - lancer la partie (adapter l'affichage en fct du nbr de joueur)
