@@ -111,7 +111,7 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
         // une invitation est reçu
         let from = invit.from; let to = invit.to;
         // verif si les deux sont connectés
-        if(clients.includes(from) && clients.includes(to)){
+        if(clients[from] && clients[to]){
             console.log("-> broadcast invitation");
             socket.broadcast.emit("invitation",invit);
         }else if(clients.includes(from)){ // si le destinataire n'est pas connecté
