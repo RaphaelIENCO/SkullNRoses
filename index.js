@@ -138,4 +138,16 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
             clients[to].emit("resultInvitation",resultInvit);
         }
     });
+
+    socket.on("annulerPartie",function(annuler){
+       let from = annuler.from; let tabJ = annuler.listeJoueurs;
+       tabJ.forEach(function(joueur){
+           let resultInvit={
+               "from":from,
+               "to":joueur,
+               "result": false
+           };
+           clients[joueur].emit("resultInvitation",resultInvit);
+       });
+    });
 });
