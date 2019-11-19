@@ -81,11 +81,18 @@ document.addEventListener("DOMContentLoaded",function(e) {
             button.value="INVITER";
 
             button.addEventListener('click',function(){
-                console.log("inviter");
                 let div1 = document.createElement("div");
+                /*
                 div1.innerText = user;
-                listeRejointInvite.appendChild(div1);
+                listeRejointInvite.appendChild(div1); */
+                var invit = {
+                    "from" :pseudo,
+                    "to" : user
+                };
+                //console.log(invit);
+                socket.emit("invitation",invit);
                 div.removeChild(button);
+
             });
 
             div.appendChild(button);
@@ -216,5 +223,9 @@ document.addEventListener("DOMContentLoaded",function(e) {
         }
 
         main.appendChild(div);
+    });
+
+    socket.on("invitation",function(invit){
+        console.log(invit);
     });
 });
