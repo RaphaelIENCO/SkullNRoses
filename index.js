@@ -112,31 +112,30 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
         let from = invit.from; let to = invit.to;
         // verif si les deux sont connectés
         if(clients[from] && clients[to]){
-            console.log("-> broadcast invitation");
-            socket.broadcast.emit("invitation",invit);
+            console.log("-> invitation au destinataire ");
+            clients[to].emit("invitation",invit);
         }else if(clients[from]){ // si le destinataire n'est pas connecté
-            console.log("-> broadcast resultInvitation");
+            console.log("-> resultInvitation annulé car destinaire non connecté");
             let result = {
                 "from":from,
                 "to":from,
                 "result": false
             };
-            socket.broadcast.emit("resultInvitation",null);
+            clients[from].emit("resultInvitation",result);
         } // sinon on n'ignore l'invitation comme l'hote de la partie est déconnecté
     });
 
     socket.on("resultInvitation",function(resultInvit){
         let from = resultInvit.from; let to = resultInvit.to;
         if(clients[from] && clients[to]){
-            console.log("-> broadcast ");
-            socket.broadcast.emit("resultInvitation",resultInvit);
-        }else { // si un des deux n'est pas connecté partie annulée
-            resultInvit.from=from;
-            resultInvit.to=to;
+            console.log("->  ");
+            clients[from].emit("resultInvitation",resultInvit);
+        }else if(clients[from]){ // si le destinataire n'est pas connecté
             resultInvit.result=false;
-            socket.broadcast.emit("resultInvitation",resultInvit);
-            resultInvit.to=from;
-            socket.broadcast.emit("resultInvitation",resultInvit);
+            clients[from].emit("resultInvitation",resultInvit);
+        }else{
+            resultInvit.result=false;
+            clients[to].emit("resultInvitation",resultInvit);
         }
     });
 
