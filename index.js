@@ -114,9 +114,32 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
         if(clients[from] && clients[to]){
             console.log("-> broadcast invitation");
             socket.broadcast.emit("invitation",invit);
-        }else if(clients.includes(from)){ // si le destinataire n'est pas connecté
+        }else if(clients[from]){ // si le destinataire n'est pas connecté
             console.log("-> broadcast resultInvitation");
+            let result = {
+                "from":from,
+                "to":from,
+                "result": false
+            };
             socket.broadcast.emit("resultInvitation",null);
         } // sinon on n'ignore l'invitation comme l'hote de la partie est déconnecté
     });
+
+    socket.on("resultInvitation",function(resultInvit){
+        let from = resultInvit.from; let to = resultInvit.to;
+        if(clients[from] && clients[to]){
+            console.log("-> broadcast ");
+            socket.broadcast.emit("resultInvitation",resultInvit);
+        }else { // si un des deux n'est pas connecté partie annulée
+            resultInvit.from=from;
+            resultInvit.to=to;
+            resultInvit.result=false;
+            socket.broadcast.emit("resultInvitation",resultInvit);
+            resultInvit.to=from;
+            socket.broadcast.emit("resultInvitation",resultInvit);
+        }
+    });
+
+
+
 });
