@@ -76,7 +76,15 @@ document.addEventListener("DOMContentLoaded",function(e) {
             if(user != pseudo) {
                 let div = document.createElement("div");
                 div.id=user+"Name";
-                div.innerText = user;
+                div.style.clear="left";
+                let div1 = document.createElement("div");
+                div1.innerText = user;
+                div1.style.float="left";
+                div1.style.paddingRight="15px";
+                let div2 = document.createElement("div");
+                div2.style.color="red";
+                div2.id=user+"NameResult";
+                div2.style.display="none";
                 let button = document.createElement("input");
                 button.id=user+"Btn";
                 button.type = "button";
@@ -92,7 +100,8 @@ document.addEventListener("DOMContentLoaded",function(e) {
                     div.removeChild(button);
 
                 });
-
+                div.appendChild(div1);
+                div.appendChild(div2);
                 div.appendChild(button);
                 listeConnecteInvite.appendChild(div);
             }
@@ -283,8 +292,10 @@ document.addEventListener("DOMContentLoaded",function(e) {
             div.innerText="[admin] "+ result.from + " à annulé la partie.";
             main.appendChild(div);
         }else{
-            let div = document.createElement("div");
-
+            console.log('try to insert');
+            let clt = document.getElementById(result.to+"NameResult");
+            clt.innerText="Refusé";
+            clt.style.display="block";
         }
     });
 });
