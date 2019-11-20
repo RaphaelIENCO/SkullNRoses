@@ -111,7 +111,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
             listeJoueurs : listeJoueurs
         };
         console.log(annul);
-        socket.emit("annulPartie",annul);
+        socket.emit("annulerPartie",annul);
         listeConnecteInvite.innerHTML = "<h4>Joueurs connectés</h4>";
         listeRejointInvite.innerHTML = "<h4>Joueurs en salle d'attente</h4>";
         menuInvite.style.display = "none";
@@ -273,8 +273,18 @@ document.addEventListener("DOMContentLoaded",function(e) {
 
     socket.on("resultInvitation",function (result) {
         console.log(result);
-        let div = document.createElement("div");
-        div.innerText = result.to;
-        listeRejointF.appendChild(div);
+        if(result.result){
+            let div = document.createElement("div");
+            div.innerText = result.to;
+            listeRejointF.appendChild(div);
+        }else if(result.to===pseudo){
+            let div = document.createElement("div");
+            div.style.color="red";
+            div.innerText="[admin] "+ result.from + " à annulé la partie.";
+            main.appendChild(div);
+        }else{
+            let div = document.createElement("div");
+
+        }
     });
 });
