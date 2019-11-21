@@ -76,7 +76,15 @@ document.addEventListener("DOMContentLoaded",function(e) {
             if(user != pseudo) {
                 let div = document.createElement("div");
                 div.id=user+"Name";
-                div.innerText = user;
+                div.style.clear="left";
+                let div1 = document.createElement("div");
+                div1.innerText = user;
+                div1.style.float="left";
+                div1.style.paddingRight="15px";
+                let div2 = document.createElement("div");
+                div2.style.color="red";
+                div2.id=user+"NameResult";
+                div2.style.display="none";
                 let button = document.createElement("input");
                 button.id=user+"Btn";
                 button.type = "button";
@@ -92,7 +100,8 @@ document.addEventListener("DOMContentLoaded",function(e) {
                     div.removeChild(button);
 
                 });
-
+                div.appendChild(div1);
+                div.appendChild(div2);
                 div.appendChild(button);
                 listeConnecteInvite.appendChild(div);
             }
@@ -111,7 +120,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
             listeJoueurs : listeJoueurs
         };
         console.log(annul);
-        socket.emit("annulPartie",annul);
+        socket.emit("annulerPartie",annul);
         listeConnecteInvite.innerHTML = "<h4>Joueurs connectés</h4>";
         listeRejointInvite.innerHTML = "<h4>Joueurs en salle d'attente</h4>";
         menuInvite.style.display = "none";
@@ -273,8 +282,20 @@ document.addEventListener("DOMContentLoaded",function(e) {
 
     socket.on("resultInvitation",function (result) {
         console.log(result);
-        let div = document.createElement("div");
-        div.innerText = result.to;
-        listeRejointF.appendChild(div);
+        if(result.result){
+            let div = document.createElement("div");
+            div.innerText = result.to;
+            listeRejointF.appendChild(div);
+        }else if(result.to===pseudo){
+            let div = document.createElement("div");
+            div.style.color="red";
+            div.innerText="[admin] "+ result.from + " à annulé la partie.";
+            main.appendChild(div);
+        }else{
+            console.log('try to insert');
+            let clt = document.getElementById(result.to+"NameResult");
+            clt.innerText="Refusé";
+            clt.style.display="block";
+        }
     });
 });

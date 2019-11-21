@@ -128,7 +128,7 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
     socket.on("resultInvitation",function(resultInvit){
         let from = resultInvit.from; let to = resultInvit.to;
         if(clients[from] && clients[to]){
-            console.log("->  ");
+            console.log("->  resultInvitation invit accepté");
             clients[from].emit("resultInvitation",resultInvit);
         }else if(clients[from]){ // si le destinataire n'est pas connecté
             resultInvit.result=false;
@@ -147,6 +147,7 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
                "to":joueur,
                "result": false
            };
+           console.log("-> annuler serveur pour joueur:"+resultInvit.to);
            clients[joueur].emit("resultInvitation",resultInvit);
        });
     });

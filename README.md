@@ -16,6 +16,19 @@ Implémentation du jeu Skull N Roses en Javascript.
     - chat contenant que les joueurs de cette partie
     - 
     - un joueur qui quitte est remplacé par une IA basique
+    
+    
+# Les classes
+- Partie
+    - liste d'utilisateurs
+- Utilisateur (pour def son identité avec son socket, liste de partie en cours etc)
+    - un id (pseudo) 
+    - ? le socket ?
+    - liste de partie
+- Une classe Joueur (amazon, ...)
+    - un joueur
+    - un type (amazon, carnivorous, cyborgs, indians, etc) : ou sans ? juste le nom de la variable
+    - une image
 
 # Piste de développement
 Une classe joueur pour definir son "identité" avec son pseudo etc :
