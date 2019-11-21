@@ -1,4 +1,3 @@
-
 class Partie {
     constructor(id,listeUtilisateurs){
         this.id = id;
