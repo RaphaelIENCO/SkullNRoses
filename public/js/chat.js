@@ -20,6 +20,9 @@ document.addEventListener("DOMContentLoaded",function(e) {
     var listeRejointInvite = document.getElementById('bcListeRejoint');
     var listeRejointF = document.getElementById('bcListeF');
     var btnFermerInvite = document.getElementById('btnFermerMenuInvite');
+    var navbar = document.getElementById('navbar');
+    var ongletChat = document.getElementById('ongletChat');
+    var divParties = document.getElementById('parties');
     var pseudo;
     var usersOnline = [];
     //slt
@@ -31,8 +34,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
     BtnRechercher.addEventListener('click',rechercheIMG);
     btnInvite.addEventListener('click',afficheInvite);
     btnFermerInvite.addEventListener('click',fermerInvite);
-
-    // image s'envoie direct apres selection
+    ongletChat.addEventListener('click',openChat);
 
     var socket = io.connect("127.0.0.1:8080");
 
@@ -171,10 +173,21 @@ document.addEventListener("DOMContentLoaded",function(e) {
         request.send();
     }
 
+    function openChat(){
+        divContent.style.display = 'block';
+        //cache les parties
+        divParties.style.display = 'none';
+        ongletChat.className += " active";
+    }
+
 
     socket.on("bienvenue",function(id){
         divLogScreen.style.display = 'none';
         divContent.style.display = 'block';
+        navbar.style.display = 'block';
+        divParties.style.display = 'none';
+        console.log(ongletChat.className);
+        ongletChat.className += " active";
         isConnect = true;
         spanLogin.innerHTML = id;
         pseudo = id;
