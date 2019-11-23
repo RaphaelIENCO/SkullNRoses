@@ -1,12 +1,5 @@
 "use strict";
 
-//const Partie = require('./partie.js');
-//const Utilisateur = require('./utilisateur.js');
-
-//import Partie from "./partie.js"
-//import Utilisateur from "./utilisateur.js"
-//import {Utilisateur} from './utilisateur.js';
-
 document.addEventListener("DOMContentLoaded",function(e) {
     var divBtnConnecter = document.getElementById('btnConnecter');
     var divLogScreen = document.getElementById('logScreen');
@@ -34,7 +27,6 @@ document.addEventListener("DOMContentLoaded",function(e) {
     var divParties = document.getElementById('parties');
     var pseudo;
     var usersOnline = [];
-    var utilisateursConnectes = [];
     //slt
 
     divBtnConnecter.addEventListener('click',connect);
