@@ -12,9 +12,9 @@ Implémentation du jeu Skull N Roses en Javascript.
     - demarre la partie avec nbr de joueurs ayant rejoint (mais pas tout seul)
 
 - lancer la partie (adapter l'affichage en fct du nbr de joueur)
+    - Ajouter onglet dans la navbar avec un listner lancant le div de jeu concerné
 - implementer le jeu 
     - chat contenant que les joueurs de cette partie
-    - 
     - un joueur qui quitte est remplacé par une IA basique
     
     
