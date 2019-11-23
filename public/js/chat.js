@@ -1,4 +1,12 @@
 "use strict";
+
+//const Partie = require('./partie.js');
+//const Utilisateur = require('./utilisateur.js');
+
+//import Partie from "./partie.js"
+//import Utilisateur from "./utilisateur.js"
+//import {Utilisateur} from './utilisateur.js';
+
 document.addEventListener("DOMContentLoaded",function(e) {
     var divBtnConnecter = document.getElementById('btnConnecter');
     var divLogScreen = document.getElementById('logScreen');
@@ -15,13 +23,15 @@ document.addEventListener("DOMContentLoaded",function(e) {
     var modalIMG = document.getElementById('bcImage');
     var resultIMG = document.getElementById('bcResults');
     var btnInvite = document.getElementById('btnInviter');
+    var btnLancerPartie = document.getElementById('btnLancerPartie');
     var menuInvite = document.getElementById('bcMenuInvite');
     var listeConnecteInvite = document.getElementById('bcListeConnecte');
     var listeRejointInvite = document.getElementById('bcListeRejoint');
-    var listeRejointF = document.getElementById('bcListeF');
+    var listeRejointAccepter = document.getElementById('bcListeRejointAccepter');
     var btnFermerInvite = document.getElementById('btnFermerMenuInvite');
     var pseudo;
     var usersOnline = [];
+    var utilisateursConnectes = [];
     //slt
 
     divBtnConnecter.addEventListener('click',connect);
@@ -31,6 +41,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
     BtnRechercher.addEventListener('click',rechercheIMG);
     btnInvite.addEventListener('click',afficheInvite);
     btnFermerInvite.addEventListener('click',fermerInvite);
+    btnLancerPartie.addEventListener('click',lancerPartie);
 
     // image s'envoie direct apres selection
 
@@ -110,7 +121,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
 
     function fermerInvite(){
         let listeJoueurs = [];
-        listeRejointF.childNodes.forEach(function (div) {
+        listeRejointAccepter.childNodes.forEach(function (div) {
             if(div.innerText != undefined){
                 listeJoueurs.push(div.innerText);
             }
@@ -185,6 +196,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
         aside.innerHTML = "";
         //console.log(liste);
         usersOnline = [];
+        console.log(liste);
         liste.forEach(function (user) {
             var div = document.createElement("div");
             div.id=user;
@@ -285,7 +297,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
         if(result.result){
             let div = document.createElement("div");
             div.innerText = result.to;
-            listeRejointF.appendChild(div);
+            listeRejointAccepter.appendChild(div);
         }else if(result.to===pseudo){
             let div = document.createElement("div");
             div.style.color="red";
@@ -298,4 +310,22 @@ document.addEventListener("DOMContentLoaded",function(e) {
             clt.style.display="block";
         }
     });
+
+    function lancerPartie(){
+        let listeJoueurs = [];
+        listeRejointAccepter.childNodes.forEach(function (div) {
+            if(div.innerText != undefined){
+                listeJoueurs.push(div.innerText);
+            }
+        });
+        if(!(listeJoueurs.length>=2 && listeJoueurs.length<=5)){ // jouable entre 3 à 6 joueurs, ici on ne compte pas l'hôte de la partie
+            alert("Le nombre de joueurs pour lancer le jeu doit être entre 3 et 6 joueurs");
+            return;
+        }
+        listeJoueurs.push(pseudo); // on ajoute l'hote a la partie
+
+        console.log("envoyer au serveur les id des joueurs ayant accepté suivant : ");
+        console.log(listeJoueurs);
+        socket.emit("lancerPartie",listeJoueurs);
+    }
 });

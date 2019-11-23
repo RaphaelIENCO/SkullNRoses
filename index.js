@@ -1,5 +1,10 @@
 // Chargement des modules
 var express = require('express');
+
+
+const Utilisateur = require('./public/js/utilisateur.js');
+const Partie = require('./public/js/partie.js');
+
 var app = express();
 var server = app.listen(8080, function() {
     console.log("C'est parti ! En attente de connexion sur le port 8080...");
@@ -19,6 +24,7 @@ app.get('/', function(req, res) {
 
 /*** Gestion des clients et des connexions ***/
 var clients = {};       // id -> socket
+var utilisateurs = {};
 
 // Quand un client se connecte, on le note dans la console
 io.on('connection', function (socket) { // socket = io.connect("....:8080");
@@ -26,6 +32,7 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
     // message de debug
     console.log("Un client s'est connecté");
     var currentID = null;
+
     
     /**
      *  Doit être la première action après la connexion.
@@ -36,7 +43,12 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
             id = id + "(1)";   
         }
         currentID = id;
+        let util= new Utilisateur(currentID);
+
         clients[currentID] = socket;
+        utilisateurs[currentID] = util;
+
+        console.log(util);
         
         console.log("Nouvel utilisateur : " + currentID);
         // envoi d'un message de bienvenue à ce client
@@ -151,4 +163,23 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
            clients[joueur].emit("resultInvitation",resultInvit);
        });
     });
+
+    /*** Gestion des parties en cours ***/
+    var partieEnCours=[];
+
+    socket.on("lancerPartie",function(listeJoueur){
+        let listeUser= [];
+        listeJoueur.forEach(function(joueur) {
+            console.log(joueur);
+            listeUser.push(utilisateurs[joueur]);
+        });
+
+        let partie = new Partie(partieEnCours.length+1,listeUser);
+        console.log("partie crée : ");
+        console.log(partie);
+
+        partieEnCours.push(partie);
+
+        // emit qq chose pour prevenir les joueurs
+    })
 });
