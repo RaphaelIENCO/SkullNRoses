@@ -181,5 +181,13 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
         partieEnCours.push(partie);
 
         // emit qq chose pour prevenir les joueurs
+        listeJoueur.forEach(function(joueur){
+            let obj = {
+                "id" : partie.id,
+                "nbJoueurs" : partie.nbJoueurs,
+                "listeUtilisateur" : partie.listeUtilisateurs
+            };
+            clients[joueur].emit("debutPartie",obj);
+        });
     })
 });

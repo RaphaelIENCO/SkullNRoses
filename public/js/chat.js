@@ -180,8 +180,10 @@ document.addEventListener("DOMContentLoaded",function(e) {
 
     function openChat(){
         divContent.style.display = 'block';
-        //cache les parties
         divParties.style.display = 'none';
+        navbar.childNodes.forEach(function(element){
+            element.className = "tablinks";
+        });
         ongletChat.className += " active";
     }
 
@@ -335,4 +337,32 @@ document.addEventListener("DOMContentLoaded",function(e) {
         console.log(listeJoueurs);
         socket.emit("lancerPartie",listeJoueurs);
     }
+
+    socket.on("debutPartie",function(obj){
+        fermerInvite();
+        let button = document.createElement("button");
+        button.id = obj.id;
+        button.className += " tablinks";
+        button.innerText = "Partie "+obj.id;
+        navbar.appendChild(button);
+
+        let div = document.createElement("div");
+        div.id = "divPartie"+obj.id;
+        div.height = "500px"; // a retirer pour mettre plateau de jeu
+        div.length = "500px";
+        div.style.display = "none";
+        div.style.backgroundColor = "red";
+        divParties.appendChild(div);
+
+        button.addEventListener('click',function(){
+            divParties.style.display = 'block';
+            div.style.display = 'block';
+            divContent.style.display = 'none';
+            navbar.childNodes.forEach(function(element){
+                element.className = "tablinks";
+            });
+            button.className += " active";
+            //retirer class active aux autres button
+        });
+    });
 });
