@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
     var divParties = document.getElementById('parties');
     var pseudo;
     var usersOnline = [];
+    var listeClans = ['amazons','carnivorous','cyborgs','indians','jokers','swallows'];
     //slt
 
     divBtnConnecter.addEventListener('click',connect);
@@ -327,6 +328,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
                 listeJoueurs.push(div.innerText);
             }
         });
+        // commenter pour test interface
         if(!(listeJoueurs.length>=2 && listeJoueurs.length<=5)){ // jouable entre 3 à 6 joueurs, ici on ne compte pas l'hôte de la partie
             alert("Le nombre de joueurs pour lancer le jeu doit être entre 3 et 6 joueurs");
             return;
@@ -339,7 +341,10 @@ document.addEventListener("DOMContentLoaded",function(e) {
     }
 
     socket.on("debutPartie",function(obj){
-        fermerInvite();
+        listeConnecteInvite.innerHTML = "<h4>Joueurs connectés</h4>";
+        listeRejointInvite.innerHTML = "<h4>Joueurs en salle d'attente</h4>";
+        menuInvite.style.display = "none";
+
         let button = document.createElement("button");
         button.id = obj.id;
         button.className += " tablinks";
@@ -348,11 +353,24 @@ document.addEventListener("DOMContentLoaded",function(e) {
 
         let div = document.createElement("div");
         div.id = "divPartie"+obj.id;
-        div.height = "500px"; // a retirer pour mettre plateau de jeu
-        div.length = "500px";
+        div.className = "unePartie";
+        //div.height = "500px"; // a retirer pour mettre plateau de jeu
+        //div.length = "500px";
         div.style.display = "none";
-        div.style.backgroundColor = "red";
+
+        // interface de la partie
+        let contentAddPerJoueur="<div class=\"joueur\">\n" +
+            "                <main></main>\n" +
+            "                <aside class=\"etatJoueur carreSkull\"></aside>\n" +
+            "                <footer></footer>\n" +
+            "            </div>";
+
         divParties.appendChild(div);
+        for(let i=1;i<=obj.nbJoueurs;i++){
+            div.innerHTML+=contentAddPerJoueur;
+            let footer = document.querySelector("body #parties #divPartie"+obj.id+" .joueur:nth-of-type("+i+") footer");
+            footer.innerHTML+="<div class=\"jeton "+listeClans[i-1]+"\"></div>";
+        }
 
         button.addEventListener('click',function(){
             divParties.style.display = 'block';

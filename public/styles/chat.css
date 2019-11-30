@@ -275,3 +275,103 @@ Barre de navigation entre onglet
 .tab button.active {
     background-color: #ccc;
 }
+
+
+/********************************************************
+ *                       LE JEU
+ ********************************************************/
+/******************** les jetons ********************/
+.jeton{
+    background-size: contain;
+    width:100px;
+    height:100px;
+    margin-left:auto;
+    margin-right:auto;
+}
+/* RECTO */
+.rose{
+    background-image: url(../images/recto_roses.png);
+}
+
+.skull{
+    background-image: url(../images/recto_skull.png);
+}
+
+/* VERSO */
+.cyborgs{background-image: url(../images/cyborgs.png); transform: rotate(180deg);}
+.amazons{background-image: url(../images/amazons.png);}
+.carnivorous{background-image: url(../images/carnivorous.png);}
+.indians{background-image: url(../images/indians.png);}
+.jokers{background-image: url(../images/jokers.png); transform: rotate(180deg);}
+.swallows{background-image: url(../images/swallows.png); transform: rotate(180deg);}
+
+/******************** le plateau ********************/
+
+/* Les etats des joueurs */
+.carreSkull{background-image: url(../images/carre_skull.png);}
+.carreRoses{background-image: url(../images/carre_roses.png);}
+
+.etatJoueur {
+    background-size: contain;
+    width:200px;
+    height:200px;
+}
+
+/* mise en place des joueurs */
+.joueur{
+    position:absolute;
+    width:30vw;
+    /*height:300px;*/
+}
+.joueur:before {
+    position: absolute;
+}
+
+.joueur > footer, .joueur > main{
+
+}
+
+.joueur > aside {
+    /*width:50%;*/
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.joueur:nth-of-type(1){
+    top:58.5vh;
+    left:55vw;
+}
+/*.joueur:nth-of-type(1)::before{
+    content: 'Amazons';
+    transform: translateX(-110%);
+}*/
+
+.joueur:nth-of-type(2){
+    top: 58.5vh;
+}
+
+.joueur:nth-of-type(3){
+    top:6.5vh;
+    left: 27.5vw;
+    transform-origin: center;
+    transform: rotate(180deg);
+}
+
+.joueur:nth-of-type(4){
+    top: 58.5vh;
+    left: 27.5vw;
+}
+
+.joueur:nth-of-type(5){
+    top:6.5vh;
+    left:55vw;
+    transform-origin: center;
+    transform: rotate(180deg);
+}
+
+.joueur:nth-of-type(6){
+    top:6.5vh;
+    /*left: -5vw;*/
+    transform-origin: center;
+    transform: rotate(180deg);
+}

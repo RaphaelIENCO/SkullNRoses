@@ -38,5 +38,10 @@ Une classe joueur pour definir son "identité" avec son pseudo etc :
 Une classe pour le gamer (amazons, carnivorous, cyborgs, indians, jokers, swallows)
 - attributs: une partie, un joueur, une image
 
+# Bogues trouvés
+- Si l'hote envoie une invitation de partie a un joueur et que celui-ci ne fait rien, lorsque 
+l'hote annule la partie le joueur ne reçoit pas le "Bob a annulé la partie". MAIS il le reçoit 
+a chaque annulation de partie de ce meme hote. ==== provoque parfois un nullpointer exception lors 
+de la deconnexion du joueur non hote suite à cela.
 
 
