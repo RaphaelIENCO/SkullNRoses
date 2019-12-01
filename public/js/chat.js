@@ -19,7 +19,6 @@ document.addEventListener("DOMContentLoaded",function(e) {
     var btnLancerPartie = document.getElementById('btnLancerPartie');
     var menuInvite = document.getElementById('bcMenuInvite');
     var listeConnecteInvite = document.getElementById('bcListeConnecte');
-    var listeRejointInvite = document.getElementById('bcListeRejoint');
     var listeRejointAccepter = document.getElementById('bcListeRejointAccepter');
     var btnFermerInvite = document.getElementById('btnFermerMenuInvite');
     var navbar = document.getElementById('navbar');
@@ -28,6 +27,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
     var pseudo;
     var usersOnline = [];
     var listeClans = ['amazons','carnivorous','cyborgs','indians','jokers','swallows'];
+    var listeJoueursInvites = [];
     //slt
 
     divBtnConnecter.addEventListener('click',connect);
@@ -99,14 +99,14 @@ document.addEventListener("DOMContentLoaded",function(e) {
                 button.value="INVITER";
 
                 button.addEventListener('click',function(){
-                    var invit = {
+                    let invit = {
                         "from" :pseudo,
                         "to" : user
                     };
                     //console.log(invit);
                     socket.emit("invitation",invit);
                     div.removeChild(button);
-
+                    listeJoueursInvites.push(user);
                 });
                 div.appendChild(div1);
                 div.appendChild(div2);
@@ -118,11 +118,8 @@ document.addEventListener("DOMContentLoaded",function(e) {
 
     function fermerInvite(){
         let listeJoueurs = [];
-        listeRejointAccepter.childNodes.forEach(function (div) {
-            if(div.innerText != undefined){
-                listeJoueurs.push(div.innerText);
-            }
-        });
+        console.log(listeJoueursInvites);
+        listeJoueurs= listeJoueurs.concat(listeJoueursInvites);
         let annul = {
             from : pseudo,
             listeJoueurs : listeJoueurs
@@ -130,7 +127,8 @@ document.addEventListener("DOMContentLoaded",function(e) {
         console.log(annul);
         socket.emit("annulerPartie",annul);
         listeConnecteInvite.innerHTML = "<h4>Joueurs connectés</h4>";
-        listeRejointInvite.innerHTML = "<h4>Joueurs en salle d'attente</h4>";
+        listeRejointAccepter.innerHTML = "";
+        listeJoueursInvites=[];
         menuInvite.style.display = "none";
     }
 
@@ -313,6 +311,11 @@ document.addEventListener("DOMContentLoaded",function(e) {
             div.style.color="red";
             div.innerText="[admin] "+ result.from + " à annulé la partie.";
             main.appendChild(div);
+            main.childNodes.forEach(function (div) {
+                if(div.innerText != undefined && div.innerText == "[admin] "+ result.from+" vous a envoyé une invitation à jouer ! AccepterRefuser"){
+                    div.innerText = "[admin] "+ result.from+" vous a envoyé une invitation à jouer ! Invitation Annulé";
+                }
+            });
         }else{
             console.log('try to insert');
             let clt = document.getElementById(result.to+"NameResult");
@@ -338,13 +341,14 @@ document.addEventListener("DOMContentLoaded",function(e) {
         console.log("envoyer au serveur les id des joueurs ayant accepté suivant : ");
         console.log(listeJoueurs);
         socket.emit("lancerPartie",listeJoueurs);
+
+        listeJoueursInvites=[];
+        listeConnecteInvite.innerHTML = "<h4>Joueurs connectés</h4>";
+        listeRejointAccepter.innerHTML = "";
+        menuInvite.style.display = "none";
     }
 
     socket.on("debutPartie",function(obj){
-        listeConnecteInvite.innerHTML = "<h4>Joueurs connectés</h4>";
-        listeRejointInvite.innerHTML = "<h4>Joueurs en salle d'attente</h4>";
-        menuInvite.style.display = "none";
-
         let button = document.createElement("button");
         button.id = obj.id;
         button.className += " tablinks";

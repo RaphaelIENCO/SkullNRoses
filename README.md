@@ -39,9 +39,12 @@ Une classe pour le gamer (amazons, carnivorous, cyborgs, indians, jokers, swallo
 - attributs: une partie, un joueur, une image
 
 # Bogues trouvés
+    
 - Si l'hote envoie une invitation de partie a un joueur et que celui-ci ne fait rien, lorsque 
-l'hote annule la partie le joueur ne reçoit pas le "Bob a annulé la partie". MAIS il le reçoit 
-a chaque annulation de partie de ce meme hote. ==== provoque parfois un nullpointer exception lors 
-de la deconnexion du joueur non hote suite à cela.
+l'hote annule la partie le joueur ne reçoit pas le "Bob a annulé la partie". Il peut alors toujours 
+accepté la partie ET si il accepte il est ajouté a la file d'attente
+    ==== CORRIGE
 
-
+- Bogue lors de la création d'une 2eme partie la file d'attente n'est pas update
+et lors de la création de la partie les utilisateurs de la 1ere partie (homris l'hote)
+son mis dedans ================ CORRIGER

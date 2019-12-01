@@ -1,3 +1,5 @@
+const Partie = require('./partie.js');
+
 class Utilisateur {
     constructor(pseudo){
         this.pseudo=pseudo;

@@ -113,6 +113,12 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
                 { from: null, to: null, text: currentID + " vient de se déconnecter de l'application", date: Date.now() } );
                 // suppression de l'entrée
             delete clients[currentID];
+
+            // test du delete
+            delete utilisateurs[currentID];
+            // voir si il faut parcourir les parties de l'utilisateur a supprimer avant de le supprimer
+            // surement a faire plus tard (pour l'ajout de l'IA remplaçante)
+
             // envoi de la nouvelle liste pour mise à jour
             socket.broadcast.emit("liste", Object.keys(clients));
         }
@@ -182,6 +188,10 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
 
         // emit qq chose pour prevenir les joueurs
         listeJoueur.forEach(function(joueur){
+            console.log("addPartie");
+            console.log(utilisateurs[joueur]);
+            /*utilisateurs[joueur].addPartie(partie);**/
+            console.log("passe");
             let obj = {
                 "id" : partie.id,
                 "nbJoueurs" : partie.nbJoueurs,
