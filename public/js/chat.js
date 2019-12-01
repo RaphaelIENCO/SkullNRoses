@@ -351,11 +351,17 @@ document.addEventListener("DOMContentLoaded",function(e) {
         button.innerText = "Partie "+obj.id;
         navbar.appendChild(button);
 
+        let buttonCHAT = document.createElement("button");
+        buttonCHAT.id = "chat"+obj.id;
+        buttonCHAT.data = obj.id;
+        buttonCHAT.innerText = "Chat de partie";
+        buttonCHAT.position = "fixe";
+        buttonCHAT.left = "15px";
+        buttonCHAT.top = "500px";
+
         let div = document.createElement("div");
         div.id = "divPartie"+obj.id;
         div.className = "unePartie";
-        //div.height = "500px"; // a retirer pour mettre plateau de jeu
-        //div.length = "500px";
         div.style.display = "none";
 
         // interface de la partie
@@ -372,6 +378,8 @@ document.addEventListener("DOMContentLoaded",function(e) {
             footer.innerHTML+="<div class=\"jeton "+listeClans[i-1]+"\"></div>";
         }
 
+        div.appendChild(buttonCHAT);
+
         button.addEventListener('click',function(){
             divParties.style.display = 'block';
             div.style.display = 'block';
@@ -381,6 +389,39 @@ document.addEventListener("DOMContentLoaded",function(e) {
             });
             button.className += " active";
             //retirer class active aux autres button
+        });
+
+        let divChatPartie = document.createElement("div");
+        divChatPartie.className = "content";
+        let contentAddChat = "<h2>Chat de jeu</h2>\n" +
+            "        <h3>Clients connectés</h3>\n" +
+            "        <aside>\n" +
+            "        </aside>\n" +
+            "        <main>\n" +
+            "        </main>\n" +
+            "        <footer>\n" +
+            "            <input type=\"text\" id=\"monMessage"+obj.id+"\">\n" +
+            "            <input type=\"button\" value=\"Image\" id=\"btnImage"+obj.id+"\">\n"+
+            "            <input type=\"button\" value=\"Envoyer\" id=\"btnEnvoyer"+obj.id+"\">\n" +
+            "        </footer>\n" +
+            "        <div id=\"bcImage"+obj.id+"\" style=\"display: none;\">\n" +
+            "            <header>\n" +
+            "                <input type=\"text\" id=\"recherche"+obj.id+"\" placeholder=\"Tapez ici le texte de votre recherche\">\n" +
+            "                <input type=\"button\" value=\"Recherche\" id=\"btnRechercher"+obj.id+"\">\n" +
+            "            </header>\n" +
+            "            <div id=\"bcResults"+obj.id+"\"></div>\n" +
+            "            <footer><input type=\"button\" value=\"Fermer\" id=\"btnFermer"+obj.id+"\"></footer>\n" +
+            "        </div>";
+        divChatPartie.innerHTML = contentAddChat;
+        divChatPartie.style.display ="none";
+        div.appendChild(divChatPartie);
+
+        buttonCHAT.addEventListener('click',function(){
+            if(divChatPartie.style.display == "none"){
+                divChatPartie.style.display = "block";
+            }else{
+                divChatPartie.style.display = "none";
+            }
         });
     });
 });
