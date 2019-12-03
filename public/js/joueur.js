@@ -8,9 +8,9 @@ const clan = {
 };
 
 class Joueur{
-    constructor(partie,utilisateur, numClan){
-        this.partie=partie;
-        this.utilisateur=utilisateur;
+    constructor(partie,pseudoUtilisateur, numClan){
+        this.idPartie=partie.id;
+        this.pseudoUtilisateur=pseudoUtilisateur;
         this.clan=clan[numClan];
         this.actif=true;
         this.perdant=false;
@@ -19,9 +19,9 @@ class Joueur{
         this.jetonsPoses=[];
     }
 
-    getUtilisateur(){return this.utilisateur;}
+    getPseudoUtilisateur(){return this.pseudoUtilisateur;}
 
-    getPartie(){return this.partie;}
+    getIdPartie(){return this.idPartie;}
 
     getJetonsPoses(){return this.jetonsPoses;}
 

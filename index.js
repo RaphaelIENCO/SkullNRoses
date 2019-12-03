@@ -93,8 +93,8 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
                     if(partie.getId() === msg.id){
                         console.log("la partie a le meme id");
                         partie.getListeJoueurs().forEach(function(joueur){
-                            console.log(joueur.utilisateur.pseudo);
-                            clients[joueur.utilisateur.pseudo].emit("message",msg);
+                            console.log(joueur.getPseudoUtilisateur());
+                            clients[joueur.getPseudoUtilisateur()].emit("message",msg);
                         });
                     }
                 }
@@ -208,12 +208,16 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
         listeJoueur.forEach(function(joueur){
             console.log("addPartie to "+joueur);
             utilisateurs[joueur].addIdPartie(partie.getId());
+            console.log("done");
             let obj = {
                 "id" : partie.id,
                 "nbJoueurs" : partie.nbJoueurs,
-                "listeUtilisateur" : partie.listeUtilisateurs
+                "listeJoueur" : partie.listeJoueurs,
+                "aQuiLeTour" : partie.aQuiLeTour()
             };
+            console.log("array no bogue, start emit");
             clients[joueur].emit("debutPartie",obj);
+            console.log("emit done");
         });
     })
 });

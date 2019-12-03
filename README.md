@@ -53,7 +53,7 @@ sont mis dedans ================ CORRIGE
 
 - Lors de l'ajout d'une partie à un utilisateur. Si on ajoute un objet partie dans l'utilisateur
 comme il y a déjà beaucoup d'objet dans un objet partie DONT l'utilisateur cela crée une boucle infini
-en mémoire. On aura en mémoire par exemple (version simplifier) : 
+en mémoire (recursion d'objet). On aura en mémoire par exemple (version simplifier) : 
 [ obj Utilisateur :
     - idUtil, ....
     - listeParties = [
@@ -74,4 +74,8 @@ en mémoire. On aura en mémoire par exemple (version simplifier) :
 ] 
 ========== Pour empecher cette boucle infini j'ai stocker uniquement les id des parties dans listeParties
 le message d'erreur était le suivant :
+buffer.js:424 return b instanceof Buffer;
 RangeError: Maximum call stack size exceeded
+========== l'erreur vient lors de l'envoie de la socket qui est trop grande
+========== pour voir le problème on print l'objet dans le terminal du serveur si l'objet apparait en [circular] c'est
+que l'objet s'appelle lui même (voir exemple de la recursion d'objet ci-dessus) 

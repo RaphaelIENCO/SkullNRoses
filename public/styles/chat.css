@@ -7,8 +7,8 @@ body {
     box-sizing: border-box;   
 }
 body > div {
-    box-shadow: -10px 10px 20px #A0A0A0;
-    border: solid 1px #A0A0A0;
+    /*box-shadow: -10px 10px 20px #A0A0A0;
+    border: solid 1px #A0A0A0;*/
 }
 
 .content {
@@ -309,6 +309,19 @@ Barre de navigation entre onglet
 /******************** le plateau ********************/
 
 /* Les etats des joueurs */
+.joueurCourant{
+    font-size:x-large;
+}
+.indication{
+    color:red;
+    font-size:large;
+}
+.containTour{
+    margin-left:auto;
+    margin-right:auto;
+    width:200px;
+}
+
 .carreSkull{background-image: url(../images/carre_skull.png);}
 .carreRoses{background-image: url(../images/carre_roses.png);}
 
@@ -343,9 +356,28 @@ Barre de navigation entre onglet
     position:absolute;
     width:30vw;
     /*height:300px;*/
+    margin-top:50px;
 }
 .joueur:before {
     position: absolute;
+}
+
+.nameJoueur{
+    background-image:none;
+    display: block;
+    margin-left:auto;
+    margin-right:auto;
+    width:200px;
+    font-weight: bold;
+    font-size:large;
+    text-align: center;
+}
+
+.nameJoueur .cyborgs, .nameJoueur .jokers, .nameJoueur .swallows{
+    transform: rotate(180deg);
+}
+.nameJoueur .cyborgs, .nameJoueur .jokers, .nameJoueur .swallows{
+    float:inherit;
 }
 
 .joueur > footer, .joueur > main{

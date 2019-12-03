@@ -353,7 +353,19 @@ document.addEventListener("DOMContentLoaded",function(e) {
         menuInvite.style.display = "none";
     }
 
+    /** *************************** Gestion de la partie *************************** **/
+    var indicationDebutTour=" choisissez un disque à empiler.";
+    var listeJoueursParPartie =[];
+
     socket.on("debutPartie",function(obj){
+        let listeJoueursDeLaPartie = [];
+        obj.listeJoueur.forEach(function(util){
+            listeJoueursDeLaPartie.push(util);
+        });
+        console.log(listeJoueursDeLaPartie);
+        listeJoueursParPartie.push([obj.id ,listeJoueursDeLaPartie]);
+        console.log(listeJoueursParPartie);
+
         let button = document.createElement("button");
         button.id = obj.id;
         button.className += " tablinks";
@@ -381,15 +393,21 @@ document.addEventListener("DOMContentLoaded",function(e) {
             "            </div>";
 
         divParties.appendChild(div);
+        //let divContentJoueurs = document.createElement("div");
+        //div.appendChild(divContentJoueurs);
         for(let i=1;i<=obj.nbJoueurs;i++){
             div.innerHTML+=contentAddPerJoueur;
+            //divContentJoueurs.innerHTML+=contentAddPerJoueur;
             let footer = document.querySelector("body #parties #divPartie"+obj.id+" .joueur:nth-of-type("+i+") footer");
             if(listeClans[i-1]==="cyborgs"|| listeClans[i-1]==="jokers" || listeClans[i-1]==="swallows"){
                 footer.innerHTML+="<div class=\"englobeJ\"><div class=\"nbJetons "+listeClans[i-1]+"\">4</div><div class=\"jeton "+listeClans[i-1]+"\"></div></div>";
             }else{
                 footer.innerHTML+="<div class=\"englobeJ\"><div class=\"jeton "+listeClans[i-1]+"\"></div><div class=\"nbJetons "+listeClans[i-1]+"\">4</div></div>";
             }
+            footer.innerHTML+="<span class='nameJoueur "+listeClans[i-1]+"'>"+listeJoueursDeLaPartie[i-1].pseudoUtilisateur+"</span>";
         }
+        div.innerHTML+="<div class='containTour'><span class='joueurCourant'>"+listeJoueursDeLaPartie[obj.aQuiLeTour].pseudoUtilisateur+"</span><span class='indication'>"+indicationDebutTour+"</span> </div>";
+
 
         div.appendChild(buttonCHAT);
 
