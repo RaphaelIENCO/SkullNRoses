@@ -24,7 +24,8 @@ app.get('/', function(req, res) {
 
 /*** Gestion des clients et des connexions ***/
 var clients = {};       // id -> socket
-var utilisateurs = {};
+var utilisateurs = [];
+var partieEnCours=[];
 
 // Quand un client se connecte, on le note dans la console
 io.on('connection', function (socket) { // socket = io.connect("....:8080");
@@ -77,10 +78,27 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
             if (msg.from != msg.to) {
                 socket.emit("message", msg);
             }
-        }
-        else {
-            console.log(" --> broadcast");
-            io.sockets.emit("message", msg);
+        }else{
+            console.log(msg.id);
+            if(msg.id === 0){
+                console.log(" --> broadcast");
+                io.sockets.emit("message", msg);
+            }else{
+                console.log("je rentre dans le else");
+                console.log(partieEnCours);
+                for (let i = 0; i < partieEnCours.length; i++) {
+                    let partie = partieEnCours[i];
+                    console.log(partie);
+                    console.log("suis dans le for Partie");
+                    if(partie.getId() === msg.id){
+                        console.log("la partie a le meme id");
+                        partie.getListeJoueurs().forEach(function(joueur){
+                            console.log(joueur.utilisateur.pseudo);
+                            clients[joueur.utilisateur.pseudo].emit("message",msg);
+                        });
+                    }
+                }
+            }
         }
     });
     
@@ -171,12 +189,12 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
     });
 
     /*** Gestion des parties en cours ***/
-    var partieEnCours=[];
 
     socket.on("lancerPartie",function(listeJoueur){
         let listeUser= [];
         listeJoueur.forEach(function(joueur) {
             console.log(joueur);
+            utilisateurs[joueur].listeParties.push(partieEnCours.length+1);
             listeUser.push(utilisateurs[joueur]);
         });
 

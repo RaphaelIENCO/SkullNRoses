@@ -6,13 +6,13 @@ document.addEventListener("DOMContentLoaded",function(e) {
     var divContent = document.getElementById('content');
     var isConnect = false;
     var aside = document.querySelector("body div aside");
-    var main  = document.querySelector("body div main");
+    var main  = document.getElementById("main0");
     var spanLogin = document.getElementById('login');
     var BtnEnvoyer = document.getElementById('btnEnvoyer');
     var BtnImage = document.getElementById('btnImage');
     var BtnFermer = document.getElementById('btnFermer');
     var BtnRechercher = document.getElementById('btnRechercher');
-    var inputMessage = document.getElementById('monMessage');
+    //var inputMessage = document.getElementById('monMessage');
     var modalIMG = document.getElementById('bcImage');
     var resultIMG = document.getElementById('bcResults');
     var btnInvite = document.getElementById('btnInviter');
@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
     //slt
 
     divBtnConnecter.addEventListener('click',connect);
-    BtnEnvoyer.addEventListener('click',envoiMSG);
+    BtnEnvoyer.addEventListener('click',function(){ envoiMSG(0); });
     BtnImage.addEventListener('click',envoiIMG);
     BtnFermer.addEventListener('click',fermerIMG);
     BtnRechercher.addEventListener('click',rechercheIMG);
@@ -51,7 +51,9 @@ document.addEventListener("DOMContentLoaded",function(e) {
         }
     }
 
-    function envoiMSG(){
+    function envoiMSG(id){
+        if(id == null) id = 0;
+        let inputMessage = document.getElementById("monMessage"+id);
         var to = null;
         var message = inputMessage.value;
         var messageSplit = message.split(' ');
@@ -69,6 +71,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
         }
         //console.log(to);
         var obj = {
+            "id" : id,
             "from" :pseudo,
             "to" : to,
             "text" :message,
@@ -261,8 +264,10 @@ document.addEventListener("DOMContentLoaded",function(e) {
         }else if(message.to == pseudo){
             div.style.color = "blue";
         }
+        if(message.id == null) message.id = 0;
 
-        main.appendChild(div);
+        let mainID = document.getElementById("main"+message.id);
+        mainID.appendChild(div);
     });
 
     socket.on("invitation",function(invit){
@@ -401,7 +406,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
             "        <h3>Clients connectés</h3>\n" +
             "        <aside>\n" +
             "        </aside>\n" +
-            "        <main>\n" +
+            "        <main id=\"main"+obj.id+"\">\n" +
             "        </main>\n" +
             "        <footer>\n" +
             "            <input type=\"text\" id=\"monMessage"+obj.id+"\">\n" +
@@ -419,6 +424,9 @@ document.addEventListener("DOMContentLoaded",function(e) {
         divChatPartie.innerHTML = contentAddChat;
         divChatPartie.style.display ="none";
         div.appendChild(divChatPartie);
+
+        let btnEnvoi = document.getElementById("btnEnvoyer"+obj.id);
+        btnEnvoi.addEventListener('click',function(){ envoiMSG(obj.id); });
 
         buttonCHAT.addEventListener('click',function(){
             if(divChatPartie.style.display == "none"){
