@@ -379,7 +379,11 @@ document.addEventListener("DOMContentLoaded",function(e) {
         for(let i=1;i<=obj.nbJoueurs;i++){
             div.innerHTML+=contentAddPerJoueur;
             let footer = document.querySelector("body #parties #divPartie"+obj.id+" .joueur:nth-of-type("+i+") footer");
-            footer.innerHTML+="<div class=\"jeton "+listeClans[i-1]+"\"></div>";
+            if(listeClans[i-1]==="cyborgs"|| listeClans[i-1]==="jokers" || listeClans[i-1]==="swallows"){
+                footer.innerHTML+="<div class=\"englobeJ\"><div class=\"nbJetons "+listeClans[i-1]+"\">4</div><div class=\"jeton "+listeClans[i-1]+"\"></div></div>";
+            }else{
+                footer.innerHTML+="<div class=\"englobeJ\"><div class=\"jeton "+listeClans[i-1]+"\"></div><div class=\"nbJetons "+listeClans[i-1]+"\">4</div></div>";
+            }
         }
 
         div.appendChild(buttonCHAT);

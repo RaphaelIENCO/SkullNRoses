@@ -285,8 +285,9 @@ Barre de navigation entre onglet
     background-size: contain;
     width:100px;
     height:100px;
-    margin-left:auto;
-    margin-right:auto;
+    /*margin-left:auto;
+    margin-right:auto;*/
+    float: left;
 }
 /* RECTO */
 .rose{
@@ -315,6 +316,26 @@ Barre de navigation entre onglet
     background-size: contain;
     width:200px;
     height:200px;
+}
+
+.englobeJ{
+    margin-left:auto;
+    margin-right:auto;
+    width:200px;
+}
+
+.nbJetons{
+    background-image:none;
+    margin:25px;
+    /*margin-left:auto;
+    margin-right:auto;*/
+    float:left;
+    font-size:xxx-large;
+}
+
+.nbJetons .cyborgs, .nbJetons .jokers, .nbJetons .swallows{
+    transform: rotate(180deg);
+    float:left;
 }
 
 /* mise en place des joueurs */

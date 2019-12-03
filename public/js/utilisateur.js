@@ -19,8 +19,14 @@ class Utilisateur {
         this.listeParties.push(idPartie);
     }
 
-    removePartie(partie){
-
+    removePartie(idPartie){
+        for (let i=0;i<this.listeParties.length;i++){
+            if(idPartie===this.listeParties[i]){
+                this.listeParties.splice(i,1);
+                return true;
+            }
+        }
+        return false;
     }
 
     deconnexion(){
