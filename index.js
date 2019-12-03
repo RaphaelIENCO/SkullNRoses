@@ -206,10 +206,8 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
 
         // emit qq chose pour prevenir les joueurs
         listeJoueur.forEach(function(joueur){
-            console.log("addPartie");
-            console.log(utilisateurs[joueur]);
-            /*utilisateurs[joueur].addPartie(partie);**/
-            console.log("passe");
+            console.log("addPartie to "+joueur);
+            utilisateurs[joueur].addIdPartie(partie.getId());
             let obj = {
                 "id" : partie.id,
                 "nbJoueurs" : partie.nbJoueurs,

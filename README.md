@@ -47,4 +47,31 @@ accepté la partie ET si il accepte il est ajouté a la file d'attente
 
 - Bogue lors de la création d'une 2eme partie la file d'attente n'est pas update
 et lors de la création de la partie les utilisateurs de la 1ere partie (homris l'hote)
-son mis dedans ================ CORRIGER
+sont mis dedans ================ CORRIGE
+
+# Rapport de bogues "importants"
+
+- Lors de l'ajout d'une partie à un utilisateur. Si on ajoute un objet partie dans l'utilisateur
+comme il y a déjà beaucoup d'objet dans un objet partie DONT l'utilisateur cela crée une boucle infini
+en mémoire. On aura en mémoire par exemple (version simplifier) : 
+[ obj Utilisateur :
+    - idUtil, ....
+    - listeParties = [
+        obj Partie :
+            - idPartie, ....
+            - listeUtilisateurs = [
+                obj Utilisateur :
+                    - idUtil, ....
+                    - liste Partie = [
+                        obj Partie :
+                            - idPartie, ...
+                            - listeUtilisateurs = [
+                                ..... A L INFINI
+                            ]
+                    ]
+            ]
+    ]
+] 
+========== Pour empecher cette boucle infini j'ai stocker uniquement les id des parties dans listeParties
+le message d'erreur était le suivant :
+RangeError: Maximum call stack size exceeded

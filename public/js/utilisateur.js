@@ -1,4 +1,4 @@
-const Partie = require('./partie.js');
+//const Partie = require('./partie.js');
 
 class Utilisateur {
     constructor(pseudo){
@@ -15,12 +15,18 @@ class Utilisateur {
         return this.listeParties;
     }
 
-    addPartie(partie){
-        this.listeParties.push(partie);
+    addIdPartie(idPartie){
+        this.listeParties.push(idPartie);
     }
 
-    removePartie(partie){
-
+    removePartie(idPartie){
+        for (let i=0;i<this.listeParties.length;i++){
+            if(idPartie===this.listeParties[i]){
+                this.listeParties.splice(i,1);
+                return true;
+            }
+        }
+        return false;
     }
 
     deconnexion(){
