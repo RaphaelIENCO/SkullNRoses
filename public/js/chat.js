@@ -9,11 +9,11 @@ document.addEventListener("DOMContentLoaded",function(e) {
     var main  = document.getElementById("main0");
     var spanLogin = document.getElementById('login');
     var BtnEnvoyer = document.getElementById('btnEnvoyer');
-    var BtnImage = document.getElementById('btnImage');
-    var BtnFermer = document.getElementById('btnFermer');
-    var BtnRechercher = document.getElementById('btnRechercher');
+    var BtnImage = document.getElementById('btnImage0');
+    var BtnFermer = document.getElementById('btnFermer0');
+    var BtnRechercher = document.getElementById('btnRechercher0');
     //var inputMessage = document.getElementById('monMessage');
-    var modalIMG = document.getElementById('bcImage');
+    //var modalIMG = document.getElementById('bcImage');
     var resultIMG = document.getElementById('bcResults');
     var btnInvite = document.getElementById('btnInviter');
     var btnLancerPartie = document.getElementById('btnLancerPartie');
@@ -32,8 +32,8 @@ document.addEventListener("DOMContentLoaded",function(e) {
 
     divBtnConnecter.addEventListener('click',connect);
     BtnEnvoyer.addEventListener('click',function(){ envoiMSG(0); });
-    BtnImage.addEventListener('click',envoiIMG);
-    BtnFermer.addEventListener('click',fermerIMG);
+    BtnImage.addEventListener('click',function(){envoiIMG(0)});
+    BtnFermer.addEventListener('click',function(){fermerIMG(0)});
     BtnRechercher.addEventListener('click',rechercheIMG);
     btnInvite.addEventListener('click',afficheInvite);
     btnFermerInvite.addEventListener('click',fermerInvite);
@@ -135,11 +135,13 @@ document.addEventListener("DOMContentLoaded",function(e) {
         menuInvite.style.display = "none";
     }
 
-    function envoiIMG(){
+    function envoiIMG(id){
+        let modalIMG = document.getElementById('bcImage'+id);
         modalIMG.style.display = "block";
     }
 
-    function fermerIMG(){
+    function fermerIMG(id){
+        let modalIMG = document.getElementById('bcImage'+id);
         modalIMG.style.display = "none";
     }
 
@@ -432,9 +434,6 @@ document.addEventListener("DOMContentLoaded",function(e) {
         let divChatPartie = document.createElement("div");
         divChatPartie.className = "content";
         let contentAddChat = "<h2>Chat de jeu</h2>\n" +
-            "        <h3>Clients connectés</h3>\n" +
-            "        <aside>\n" +
-            "        </aside>\n" +
             "        <main id=\"main"+obj.id+"\">\n" +
             "        </main>\n" +
             "        <footer>\n" +
@@ -442,13 +441,13 @@ document.addEventListener("DOMContentLoaded",function(e) {
             "            <input type=\"button\" value=\"Image\" id=\"btnImage"+obj.id+"\">\n"+
             "            <input type=\"button\" value=\"Envoyer\" id=\"btnEnvoyer"+obj.id+"\">\n" +
             "        </footer>\n" +
-            "        <div id=\"bcImage"+obj.id+"\" style=\"display: none;\">\n" +
+            "        <div id=\"bcImage"+obj.id+"\" class=\"bcImage\" style=\"display: none;\">\n" +
             "            <header>\n" +
             "                <input type=\"text\" id=\"recherche"+obj.id+"\" placeholder=\"Tapez ici le texte de votre recherche\">\n" +
             "                <input type=\"button\" value=\"Recherche\" id=\"btnRechercher"+obj.id+"\">\n" +
             "            </header>\n" +
-            "            <div id=\"bcResults"+obj.id+"\"></div>\n" +
-            "            <footer><input type=\"button\" value=\"Fermer\" id=\"btnFermer"+obj.id+"\"></footer>\n" +
+            "            <div id=\"bcResults"+obj.id+"\" class=\"bcResults\"></div>\n" +
+            "            <footer><input type=\"button\" class=\"btnFermer\" value=\"Fermer\" id=\"btnFermer"+obj.id+"\"></footer>\n" +
             "        </div>";
         divChatPartie.innerHTML = contentAddChat;
         divChatPartie.style.display ="none";
@@ -464,6 +463,12 @@ document.addEventListener("DOMContentLoaded",function(e) {
                 divChatPartie.style.display = "none";
             }
         });
+
+        let btnIMG = document.getElementById("btnImage"+obj.id);
+        btnIMG.addEventListener('click',function(){envoiIMG(obj.id)});
+
+        let btnFermer = document.getElementById("btnFermer"+obj.id);
+        btnFermer.addEventListener('click',function(){fermerIMG(obj.id)});
 
         if(listeJoueursDeLaPartie[obj.aQuiLeTour].pseudoUtilisateur===pseudo){
             console.log("c'est à mon tour de jouer");
