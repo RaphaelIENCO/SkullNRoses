@@ -5,8 +5,8 @@ class Partie {
         this.id = id;
         this.nbJoueurs = listeUtilisateurs.length;
 
-        this.auTourDuJoueur=Math.floor(Math.random() * Math.floor(this.nbJoueurs));
-
+        //this.auTourDuJoueur=Math.floor(Math.random() * Math.floor(this.nbJoueurs));
+        this.auTourDuJoueur=2;
         // construire liste des joueurs:
         this.listeJoueurs=[];
         //let count=0;
@@ -17,7 +17,7 @@ class Partie {
         }
     }
 
-    getId(){
+    getIdPartie(){
         return this.id;
     }
 
@@ -30,8 +30,15 @@ class Partie {
         return this.aQuiLeTour();
     }
 
-    getUtilisateurByName(name){
-        return this.listeUtilisateurs[name];
+    getJoueurByName(name){
+        console.log(name);
+        for(let i=0;i<this.listeJoueurs.length;i++){
+            console.log("joueur : "+this.listeJoueurs[i].getPseudoUtilisateur());
+            if(this.listeJoueurs[i].getPseudoUtilisateur()===name){
+                return this.listeJoueurs[i];
+            }
+        }
+        return false;
     }
 
     getNbJoueurs(){

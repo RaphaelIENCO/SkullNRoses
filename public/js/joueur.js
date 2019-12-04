@@ -14,12 +14,15 @@ class Joueur{
         this.clan=clan[numClan];
         this.actif=true;
         this.perdant=false;
+        this.positionOnBord=numClan+1;
 
         this.jetons=["roses","roses","roses","skull"];
         this.jetonsPoses=[];
     }
 
     getPseudoUtilisateur(){return this.pseudoUtilisateur;}
+
+    getPositionOnBoard(){return this.positionOnBord;}
 
     getIdPartie(){return this.idPartie;}
 

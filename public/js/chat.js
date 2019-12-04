@@ -356,6 +356,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
     /** *************************** Gestion de la partie *************************** **/
     var indicationDebutTour=" choisissez un disque à empiler.";
     var listeJoueursParPartie =[];
+    var jetonsRestant=[];
 
     socket.on("debutPartie",function(obj){
         let listeJoueursDeLaPartie = [];
@@ -413,6 +414,12 @@ document.addEventListener("DOMContentLoaded",function(e) {
 
         button.addEventListener('click',function(){
             divParties.style.display = 'block';
+            divParties.childNodes.forEach(function(div){
+                if(div.innerText!==undefined){
+                    div.style.display='none';
+                }
+            });
+            let div=document.querySelector("body #parties #divPartie"+obj.id+"");
             div.style.display = 'block';
             divContent.style.display = 'none';
             navbar.childNodes.forEach(function(element){
@@ -457,5 +464,37 @@ document.addEventListener("DOMContentLoaded",function(e) {
                 divChatPartie.style.display = "none";
             }
         });
+
+        if(listeJoueursDeLaPartie[obj.aQuiLeTour].pseudoUtilisateur===pseudo){
+            console.log("c'est à mon tour de jouer");
+            //socket.emit("getJetons",pseudo);
+            askingJetons(obj.id,pseudo);
+        }
     });
+
+    socket.on("returnJetons",function(obj){
+        if(obj.pseudo!==pseudo){return;}
+        console.log("il me reste ces jetons : "+obj.jetonsRestant);
+        jetonsRestant=obj.jetonsRestant;
+        if(jetonsRestant===null || jetonsRestant.length===0){
+            // le joueur a perdu
+            console.log("je n'ai plus de jetons, j'ai perdu");
+        }
+        // ajouter listner sur jeton
+        let jetons = document.querySelector("body #parties #divPartie"+obj.idPartie+" .joueur:nth-of-type("+obj.position+") footer");
+        // faire un choix
+        console.log("j'ai add le listner");
+        jetons.addEventListener("click",function(){
+            console.log("je click au bon endroit");
+        });
+    });
+
+    function askingJetons(idPartie,pseudo){
+        let askFor = {
+            "idPartie" :idPartie,
+            "pseudo" : pseudo
+        };
+        socket.emit("getJetons",askFor);
+        // envoyer requete au joueur suivant
+    }
 });
