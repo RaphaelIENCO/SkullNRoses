@@ -401,11 +401,12 @@ document.addEventListener("DOMContentLoaded",function(e) {
             //divContentJoueurs.innerHTML+=contentAddPerJoueur;
             let footer = document.querySelector("body #parties #divPartie"+obj.id+" .joueur:nth-of-type("+i+") footer");
             if(listeClans[i-1]==="cyborgs"|| listeClans[i-1]==="jokers" || listeClans[i-1]==="swallows"){
+                footer.innerHTML+="<span class='nameJoueur "+listeClans[i-1]+"'>"+listeJoueursDeLaPartie[i-1].pseudoUtilisateur+"</span>";
                 footer.innerHTML+="<div class=\"englobeJ\"><div class=\"nbJetons "+listeClans[i-1]+"\">4</div><div class=\"jeton "+listeClans[i-1]+"\"></div></div>";
             }else{
                 footer.innerHTML+="<div class=\"englobeJ\"><div class=\"jeton "+listeClans[i-1]+"\"></div><div class=\"nbJetons "+listeClans[i-1]+"\">4</div></div>";
+                footer.innerHTML+="<span class='nameJoueur "+listeClans[i-1]+"'>"+listeJoueursDeLaPartie[i-1].pseudoUtilisateur+"</span>";
             }
-            footer.innerHTML+="<span class='nameJoueur "+listeClans[i-1]+"'>"+listeJoueursDeLaPartie[i-1].pseudoUtilisateur+"</span>";
         }
         div.innerHTML+="<div class='containTour'><span class='joueurCourant'>"+listeJoueursDeLaPartie[obj.aQuiLeTour].pseudoUtilisateur+"</span><span class='indication'>"+indicationDebutTour+"</span> </div>";
         div.innerHTML+="<div class='choix'></div>";
@@ -537,9 +538,13 @@ document.addEventListener("DOMContentLoaded",function(e) {
 
         let aside = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside");
         if(aside.innerHTML===""){
-            aside.innerHTML= "<div class=\"jeton "+listeClans[position-1]+"\"></div><div class=\"nbJetons "+listeClans[position-1]+"\">1</div>";
+            if(listeClans[position-1]==="cyborgs"|| listeClans[position-1]==="jokers" || listeClans[position-1]==="swallows"){
+                aside.innerHTML= "<div class='englobeJ'><div class=\"nbJetons "+listeClans[position-1]+"\">1</div><div class=\"jeton "+listeClans[position-1]+"\"></div></div>";
+            }else{
+                aside.innerHTML= "<div class='englobeJ'><div class=\"jeton "+listeClans[position-1]+"\"></div><div class=\"nbJetons "+listeClans[position-1]+"\">1</div></div>";
+            }
         }else{
-            let nbPose = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .nbJetons");
+            let nbPose = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .englobeJ .nbJetons");
             nbPose.innerHTML=parseInt(nbPose.innerHTML)+1;
         }
 
