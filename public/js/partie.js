@@ -26,14 +26,12 @@ class Partie {
     }
 
     auJoueurSuivant(){
-        this.auTourDuJoueur++;
+        this.auTourDuJoueur=(this.auTourDuJoueur+1)%this.nbJoueurs;
         return this.aQuiLeTour();
     }
 
     getJoueurByName(name){
-        console.log(name);
         for(let i=0;i<this.listeJoueurs.length;i++){
-            console.log("joueur : "+this.listeJoueurs[i].getPseudoUtilisateur());
             if(this.listeJoueurs[i].getPseudoUtilisateur()===name){
                 return this.listeJoueurs[i];
             }

@@ -211,7 +211,7 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
                 "id" : partie.id,
                 "nbJoueurs" : partie.nbJoueurs,
                 "listeJoueur" : partie.listeJoueurs,
-                "aQuiLeTour" : partie.aQuiLeTour(),
+                "aQuiLeTour" : partie.aQuiLeTour()
             };
             clients[joueur].emit("debutPartie",obj);
         });
@@ -220,15 +220,11 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
     socket.on("getJetons",function(askFor){
         console.log("------------- ASKFOR :");
         console.log(askFor);
-        console.log(askFor.idPartie);
-        console.log(askFor.pseudo);
         let idPartie=askFor.idPartie;let pseudo=askFor.pseudo;
         let jetonsRestant=null;
         let position = null;
         partieEnCours.forEach(function(partie){
             if(partie.getIdPartie()===idPartie){
-                console.log(pseudo);
-                console.log(partie.getJoueurByName(pseudo));
                 jetonsRestant=partie.getJoueurByName(pseudo).getJetons();
                 position=partie.getJoueurByName(pseudo).getPositionOnBoard();
             }
@@ -240,8 +236,42 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
             "position" : position,
             "jetonsRestant" : jetonsRestant
         };
-        console.log(pseudo);
-        //console.log(clients);
         clients[pseudo].emit("returnJetons",obj);
     });
+
+    socket.on("poseUnJeton", function(obj){
+        let idPartie=obj.idPartie;let pseudo=obj.pseudo;let pose = obj.pose;
+        console.log(obj);
+        let joueurSuivant;
+        let position;
+        let nbJetonsRestant;
+        partieEnCours.forEach(function(partie){
+            if(partie.getIdPartie()===idPartie){
+                let j= partie.getJoueurByName(pseudo);
+                j.poserJeton(pose);
+                joueurSuivant=partie.auJoueurSuivant();
+                position=j.getPositionOnBoard();
+                nbJetonsRestant=j.getJetons().length;
+            }
+        });
+        console.log("renvoyer aux joueurs de la partie -> poserJeton");
+        let objetAEmit= {
+            "idPartie" : idPartie,
+            "pseudo" : pseudo,
+            "position" : position,
+            "nbJetonsRestant": nbJetonsRestant,
+            "joueurSuivant":joueurSuivant
+        };
+        emitToPartie("poserJeton",objetAEmit,idPartie);
+    });
+
+    function emitToPartie(typeEmit,objetAEmit,idPartie){
+        partieEnCours.forEach(function(partie){
+            if(partie.getIdPartie()===idPartie){
+                partie.getListeJoueurs().forEach(function(joueur){
+                    clients[joueur.pseudoUtilisateur].emit(typeEmit,objetAEmit);
+                });
+            }
+        });
+    }
 });

@@ -290,12 +290,21 @@ Barre de navigation entre onglet
     float: left;
 }
 /* RECTO */
-.rose{
+.roses{
     background-image: url(../images/recto_roses.png);
 }
 
 .skull{
     background-image: url(../images/recto_skull.png);
+}
+
+.nbRoses, .nbSkulls{
+    font-size: x-large;
+    width: 50px;
+    line-height: 100px;
+    height: 100px;
+    text-align: center;
+    float:left;
 }
 
 /* VERSO */
@@ -427,4 +436,13 @@ Barre de navigation entre onglet
     /*left: -5vw;*/
     transform-origin: center;
     transform: rotate(180deg);
+}
+
+/* Les choix */
+
+.choix{
+    display: none;
+    border: black 3px solid;
+    border-radius: 20px;
+    float: right;
 }

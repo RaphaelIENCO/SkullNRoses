@@ -408,7 +408,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
             footer.innerHTML+="<span class='nameJoueur "+listeClans[i-1]+"'>"+listeJoueursDeLaPartie[i-1].pseudoUtilisateur+"</span>";
         }
         div.innerHTML+="<div class='containTour'><span class='joueurCourant'>"+listeJoueursDeLaPartie[obj.aQuiLeTour].pseudoUtilisateur+"</span><span class='indication'>"+indicationDebutTour+"</span> </div>";
-
+        div.innerHTML+="<div class='choix'></div>";
 
         div.appendChild(buttonCHAT);
 
@@ -475,18 +475,82 @@ document.addEventListener("DOMContentLoaded",function(e) {
     socket.on("returnJetons",function(obj){
         if(obj.pseudo!==pseudo){return;}
         console.log("il me reste ces jetons : "+obj.jetonsRestant);
+        // si il a deja poser des jetons sur le plateau il faudra rajouter un choix possible -> parier
         jetonsRestant=obj.jetonsRestant;
         if(jetonsRestant===null || jetonsRestant.length===0){
             // le joueur a perdu
             console.log("je n'ai plus de jetons, j'ai perdu");
         }
-        // ajouter listner sur jeton
+        let nbRoses=0;
+        let nbSkulls=0;
+        jetonsRestant.forEach(function (jeton) {
+            if(jeton==="roses"){nbRoses++;}
+            else if(jeton==="skull"){nbSkulls++;}
+        });
+        // ajouter listner sur jeton -> ici footer c'est volontaire
         let jetons = document.querySelector("body #parties #divPartie"+obj.idPartie+" .joueur:nth-of-type("+obj.position+") footer");
         // faire un choix
-        console.log("j'ai add le listner");
         jetons.addEventListener("click",function(){
             console.log("je click au bon endroit");
-        });
+            // faire apparaitre div choix utilisateur
+            let choix = document.querySelector("body #parties #divPartie"+obj.idPartie+" .choix");
+            choix.style.display="block";
+            choix.innerHTML+="<div class=\"jeton roses\"></div><span class=\"nbRoses\">"+nbRoses+"</span>\n" +
+                             "<div class=\"jeton skull\"></div><span class=\"nbSkulls\">"+nbSkulls+"</span>";
+
+            let roses = document.querySelector("body #parties #divPartie"+obj.idPartie+" .choix .jeton.roses");
+            let skull = document.querySelector("body #parties #divPartie"+obj.idPartie+" .choix .jeton.skull");
+            roses.addEventListener("click",function(){
+                console.log("je choisis une rose");
+                //let choix = document.querySelector("body #parties #divPartie"+obj.idPartie+" .choix");
+                choix.innerHTML="";
+                choix.style.display="none";
+                let objEmit ={
+                    "idPartie" :obj.idPartie,
+                    "pseudo" : pseudo,
+                    "pose": "roses"
+                };
+                socket.emit("poseUnJeton",objEmit);
+            });
+            skull.addEventListener("click",function() {
+                console.log("je choisis un crâne");
+                //let choix = document.querySelector("body #parties #divPartie"+obj.idPartie+" .choix");
+                choix.innerHTML="";
+                choix.style.display="none";
+                let objEmit ={
+                    "idPartie" :obj.idPartie,
+                    "pseudo" : pseudo,
+                    "pose": "skull"
+                };
+                socket.emit("poseUnJeton",objEmit);
+            });
+
+        },{once : true}); // supprime l'event listner après premiere utilisation
+    });
+
+    socket.on("poserJeton",function(obj){
+        let joueurQuiAPose=obj.pseudo;let idPartie=obj.idPartie;let jSuivant=obj.joueurSuivant;
+        let position=obj.position;let nbJetonsRestant=obj.nbJetonsRestant;
+        console.log(joueurQuiAPose+" a posé un jeton");
+        let nbJeton = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") footer .englobeJ .nbJetons");
+        nbJeton.innerHTML=nbJetonsRestant;
+
+        let aside = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside");
+        if(aside.innerHTML===""){
+            aside.innerHTML= "<div class=\"jeton "+listeClans[position-1]+"\"></div><div class=\"nbJetons "+listeClans[position-1]+"\">1</div>";
+        }else{
+            let nbPose = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .nbJetons");
+            nbPose.innerHTML=parseInt(nbPose.innerHTML)+1;
+        }
+
+        // au joueur suivant
+        if(joueurQuiAPose!==pseudo){return;} // permet de faire le prochain emit qu'une fois
+        for(let i=0;i<listeJoueursParPartie.length;i++){
+            if(listeJoueursParPartie[i][0]===idPartie){
+                console.log("partie trouve");
+                askingJetons(idPartie,listeJoueursParPartie[i][1][jSuivant].pseudoUtilisateur);
+            }
+        }
     });
 
     function askingJetons(idPartie,pseudo){
