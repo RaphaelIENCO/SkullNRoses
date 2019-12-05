@@ -15,8 +15,29 @@ class Partie {
             this.listeJoueurs.push(j);
             //count++;
         }
+        this.enchereLaPlusForte={
+            "pseudoJoueur" : null,
+            "valeurEnchere" : 0
+        };
 
         this.ordreClans = ["cyborgs","jokers","amazons","indians","carnivorous","swallows"];
+    }
+
+    setEnchereLaPlusForte(pseudoJoueur,valeur){
+        for(let i=0;i<this.listeJoueurs.length;i++){
+            if(this.listeJoueurs[i].getPseudoUtilisateur()===pseudoJoueur){
+                this.enchereLaPlusForte={
+                    "pseudoJoueur" : pseudoJoueur,
+                    "valeurEnchere" : valeur
+                };
+                return true;
+            }
+        }
+        return false;
+    }
+
+    getEnchereLaPlusForte(){
+        return this.enchereLaPlusForte;
     }
 
     getIdPartie(){
@@ -35,7 +56,6 @@ class Partie {
         while(!found){
             indexClan=(indexClan+1)%(this.ordreClans.length); // pour le suivant
             for(let i=0;i<this.listeJoueurs.length;i++){
-                console.log(this.listeJoueurs[i].getClan());
                 if(this.listeJoueurs[i].getClan()===this.ordreClans[indexClan]){
                     found=true;
                     this.auTourDuJoueur=i;
@@ -58,6 +78,25 @@ class Partie {
             }
         }
         return false;
+    }
+
+    toutLesJoueursOnPoserUnjetonOuNon(){
+        for(let i=0;i<this.listeJoueurs.length;i++){
+            if(this.listeJoueurs[i].getJetonsPoses().length===0 && !this.listeJoueurs[i].isPerdant()){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    getNbDeJetonsPoses(){
+        let nbJetonsPoses=0;
+        for(let i=0;i<this.listeJoueurs.length;i++){
+            if(this.listeJoueurs[i].getJetonsPoses()!==0 && !this.listeJoueurs[i].isPerdant()){
+                nbJetonsPoses+=this.listeJoueurs[i].getJetonsPoses().length;
+            }
+        }
+        return nbJetonsPoses;
     }
 
     getNbJoueurs(){

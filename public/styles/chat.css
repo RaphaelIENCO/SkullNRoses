@@ -327,7 +327,7 @@ Barre de navigation entre onglet
 }
 .containTour{
     margin:auto;
-    width:200px;
+    width:500px;
 }
 
 .carreSkull{background-image: url(../images/carre_skull.png);}
@@ -365,6 +365,7 @@ Barre de navigation entre onglet
     /*width:30vw;
     /*height:300px;*/
     margin-top:50px;
+    z-index:1;
 }
 .joueur:before {
     position: absolute;
@@ -441,7 +442,45 @@ Barre de navigation entre onglet
 
 .choix{
     display: none;
-    border: black 3px solid;
+    border: grey 3px solid;
+    background-color: lightgrey;
     border-radius: 20px;
     float: right;
+    margin-top:-30px;
+    position:relative;
+    z-index:2;
+}
+
+.inputEnchere {
+    width: 100px;
+    height:25px;
+}
+
+.buttonEnchere {
+    margin-left: -50px;
+    width: 50px;
+    height:26px;
+}
+
+.divEnchereInput{
+    display:block;
+    margin:auto;
+    width:100px;
+}
+
+.labelEnchere{
+    margin:auto;
+    display: block;
+    text-align: center;
+}
+
+.contentEnchere{
+    float:left;
+    margin:auto;
+    width:200px;
+}
+
+.enchereStatut{
+    display: none;
+
 }

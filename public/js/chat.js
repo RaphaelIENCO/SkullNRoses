@@ -412,6 +412,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
         }
         div.innerHTML+="<div class='containTour'><span class='joueurCourant'>"+listeJoueursDeLaPartie[obj.aQuiLeTour].pseudoUtilisateur+"</span><span class='indication'>"+indicationDebutTour+"</span> </div>";
         div.innerHTML+="<div class='choix'></div>";
+        div.innerHTML+="<div class='enchereStatut'></div>";
 
         div.appendChild(buttonCHAT);
 
@@ -480,12 +481,18 @@ document.addEventListener("DOMContentLoaded",function(e) {
 
     socket.on("returnJetons",function(obj){
         if(obj.pseudo!==pseudo){return;}
+        console.log(obj);
         console.log("il me reste ces jetons : "+obj.jetonsRestant);
         // si il a deja poser des jetons sur le plateau il faudra rajouter un choix possible -> parier
+
+        if(obj.aPerdu){ console.log("je n'ai plus de jetons, j'ai perdu"); return;/* joueur suivant */}
         jetonsRestant=obj.jetonsRestant;
+
         if(jetonsRestant===null || jetonsRestant.length===0){
-            // le joueur a perdu
-            console.log("je n'ai plus de jetons, j'ai perdu");
+            // enchérir ou se coucher
+            let choix = document.querySelector("body #parties #divPartie"+obj.idPartie+" .choix");
+            choix.style.display="block";
+            setUpForEnchere(obj);
             //askingJetons(obj.idPartie,);
             return;
         }
@@ -505,6 +512,8 @@ document.addEventListener("DOMContentLoaded",function(e) {
             choix.style.display="block";
             choix.innerHTML+="<div class=\"jeton roses\"></div><span class=\"nbRoses\">"+nbRoses+"</span>\n" +
                              "<div class=\"jeton skull\"></div><span class=\"nbSkulls\">"+nbSkulls+"</span>";
+
+            if(obj.readyPourEnchere){setUpForEnchere(obj);}
 
             let roses = document.querySelector("body #parties #divPartie"+obj.idPartie+" .choix .jeton.roses");
             let skull = document.querySelector("body #parties #divPartie"+obj.idPartie+" .choix .jeton.skull");
@@ -537,6 +546,78 @@ document.addEventListener("DOMContentLoaded",function(e) {
                 });
             }
         },{once : true}); // supprime l'event listner après premiere utilisation
+    });
+
+    function setUpForEnchere(obj){
+        let addEnchere="<div class='contentEnchere'>" +
+            "<label for=\"enchere"+obj.idPartie+"\" class='labelEnchere'>De combien pariez-vous (" +
+            obj.enchereLaPlusForte.valeurEnchere+"-"+obj.nbJetonsJoues+") ?</label>" +
+            "<div class='divEnchereInput'><input type=\"number\" id=\"enchere"+obj.idPartie+"\" name=\"enchere\" class='inputEnchere' " +
+            "min=\""+obj.enchereLaPlusForte.valeurEnchere+"\" max=\""+obj.nbJetonsJoues+"\">" +
+            "<button class='buttonEnchere'>✔</button></div>" +
+            "</div>";
+
+        let choix = document.querySelector("body #parties #divPartie"+obj.idPartie+" .choix");
+        choix.innerHTML+=addEnchere;
+
+        let buttonEnchere=document.querySelector("body #parties #divPartie"+obj.idPartie+" .choix .buttonEnchere");
+        buttonEnchere.addEventListener("click",function () {
+            console.log("je valide l'enchere");
+            let input = document.querySelector("body #parties #divPartie"+obj.idPartie+" .choix .inputEnchere");
+            let inputValue = input.value;
+            console.log(inputValue+" compare to ("+obj.enchereLaPlusForte.valeurEnchere+"-"+obj.nbJetonsJoues+")");
+            if(!(inputValue>obj.enchereLaPlusForte.valeurEnchere && inputValue<=obj.nbJetonsJoues)){
+                alert("Enchere non conforme réessayé svp.");
+                return;
+            }
+
+            if(inputValue===obj.nbJetonsJoues){
+                console.log("enchere gagne -> a implem");
+                // emit something
+                return;
+            }
+            let toSend = {
+                "idPartie": obj.idPartie,
+                "pseudo":pseudo,
+                "valeurEnchere":inputValue
+            };
+            socket.emit("proposeEnchere",toSend);
+
+            choix.innerHTML="";
+            choix.style.display="none";
+        });
+    }
+
+    socket.on("phaseEnchere",function(obj){
+        console.log("phaseEnchereReçu");
+        console.log(obj);
+
+        // update affichage
+        let divEnchere= document.querySelector("body #parties #divPartie"+obj.idPartie+" .enchereStatut");
+        divEnchere.style.display="block";
+        divEnchere.innerHTML=obj.pseudo+" detient la plus haute enchère qui est de "+obj.enchereLaPlusForte.valeurEnchere+" jetons.";
+
+        // au joueur suivant
+        if(obj.pseudo!==pseudo){return;} // permet de faire le prochain emit qu'une fois
+        for(let i=0;i<listeJoueursParPartie.length;i++){
+            if(listeJoueursParPartie[i][0]===obj.idPartie){
+                askingEncheres(obj.idPartie,listeJoueursParPartie[i][1][obj.joueurSuivant].pseudoUtilisateur);
+            }
+        }
+    });
+
+    function askingEncheres(idPartie,pseudo){
+        let askFor = {
+            "idPartie" :idPartie,
+            "pseudo" : pseudo
+        };
+        socket.emit("askEnchere",askFor);
+    }
+
+    socket.on("returnAskEnchere",function(obj){
+        let choix = document.querySelector("body #parties #divPartie"+obj.idPartie+" .choix");
+        choix.style.display="block";
+        setUpForEnchere(obj);
     });
 
     socket.on("poserJeton",function(obj){
@@ -576,4 +657,5 @@ document.addEventListener("DOMContentLoaded",function(e) {
         socket.emit("getJetons",askFor);
         // envoyer requete au joueur suivant
     }
+
 });

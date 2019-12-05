@@ -223,10 +223,18 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
         let idPartie=askFor.idPartie;let pseudo=askFor.pseudo;
         let jetonsRestant=null;
         let position = null;
+        let aPerdu = false;
+        let readyPourEnchere= false;
+        let nbJetonsJoues=null;
+        let enchereLaPlusForte=null;
         partieEnCours.forEach(function(partie){
             if(partie.getIdPartie()===idPartie){
                 jetonsRestant=partie.getJoueurByName(pseudo).getJetons();
                 position=partie.getJoueurByName(pseudo).getPositionOnBoard();
+                aPerdu=partie.getJoueurByName(pseudo).isPerdant();
+                readyPourEnchere=partie.toutLesJoueursOnPoserUnjetonOuNon();
+                nbJetonsJoues=partie.getNbDeJetonsPoses();
+                enchereLaPlusForte=partie.getEnchereLaPlusForte();
             }
         });
 
@@ -234,7 +242,11 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
             "idPartie" : idPartie,
             "pseudo" : pseudo,
             "position" : position,
-            "jetonsRestant" : jetonsRestant
+            "jetonsRestant" : jetonsRestant,
+            "aPerdu" : aPerdu,
+            "readyPourEnchere" : readyPourEnchere,
+            "nbJetonsJoues" : nbJetonsJoues,
+            "enchereLaPlusForte" : enchereLaPlusForte
         };
         clients[pseudo].emit("returnJetons",obj);
     });
@@ -263,6 +275,77 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
             "joueurSuivant":joueurSuivant
         };
         emitToPartie("poserJeton",objetAEmit,idPartie);
+    });
+
+    socket.on("proposeEnchere", function(obj){
+        let idPartie=obj.idPartie;let pseudo=obj.pseudo;
+        console.log(obj);
+        let encherePropose=obj.valeurEnchere;
+        let enchereMax=false;
+
+        let joueurSuivant=null;
+        let nbJetonsJoues=null;
+        let enchereLaPlusForte=null;
+        partieEnCours.forEach(function(partie){
+            if(partie.getIdPartie()===idPartie){
+                if(partie.getNbDeJetonsPoses()===encherePropose){
+                    enchereMax=true;
+                }
+                partie.setEnchereLaPlusForte(pseudo,encherePropose);
+                enchereLaPlusForte=partie.getEnchereLaPlusForte();
+                nbJetonsJoues=partie.getNbDeJetonsPoses();
+
+                joueurSuivant=partie.auJoueurSuivant();
+            }
+        });
+        if(enchereMax){
+            console.log("- enchere max "+pseudo+" doit retrourner les jetons");
+            // socket.emit gagneEnchere
+            return;
+        }
+
+        let objetAEmit = {
+            "idPartie" : idPartie,
+            "pseudo" : pseudo,
+            "enchereLaPlusForte" : enchereLaPlusForte,
+            "joueurSuivant" : joueurSuivant
+        };
+        emitToPartie("phaseEnchere",objetAEmit,idPartie);
+    });
+
+    socket.on("askEnchere", function(obj){
+        let idPartie=obj.idPartie;let pseudo=obj.pseudo;
+
+        let nbJetonsJoues=null;
+        let enchereLaPlusForte=null;
+        let position=null;
+        let aPerdu=null;
+        let actif=null;
+        partieEnCours.forEach(function(partie){
+            if(partie.getIdPartie()===idPartie){
+                let j=partie.getJoueurByName(pseudo);
+                aPerdu=j.isPerdant();
+                actif=j.getActif();
+                nbJetonsJoues=partie.getNbDeJetonsPoses();
+                enchereLaPlusForte=partie.getEnchereLaPlusForte();
+                position=j.getPositionOnBoard();
+            }
+        });
+
+        if(aPerdu || !actif){
+            console.log(pseudo+" a perdu ou est déjà couché.");
+            // emit special pour passer direct au joueur suivant (sera la mm que si le joueur se couche)
+        }
+
+
+        let objetAEmit = {
+            "idPartie" : idPartie,
+            "pseudo" : pseudo,
+            "position" : position,
+            "nbJetonsJoues" : nbJetonsJoues,
+            "enchereLaPlusForte" : enchereLaPlusForte
+        };
+        clients[pseudo].emit("returnAskEnchere",objetAEmit);
     });
 
     function emitToPartie(typeEmit,objetAEmit,idPartie){
