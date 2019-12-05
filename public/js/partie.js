@@ -15,6 +15,8 @@ class Partie {
             this.listeJoueurs.push(j);
             //count++;
         }
+
+        this.ordreClans = ["cyborgs","jokers","amazons","indians","carnivorous","swallows"];
     }
 
     getIdPartie(){
@@ -26,7 +28,26 @@ class Partie {
     }
 
     auJoueurSuivant(){
-        this.auTourDuJoueur=(this.auTourDuJoueur+1)%this.nbJoueurs;
+        let clanDuJoueurDuTourEnCours = this.listeJoueurs[this.auTourDuJoueur].getClan();
+        let indexClan = this.ordreClans.indexOf(clanDuJoueurDuTourEnCours);
+
+        let found=false;
+        while(!found){
+            indexClan=(indexClan+1)%(this.ordreClans.length); // pour le suivant
+            for(let i=0;i<this.listeJoueurs.length;i++){
+                console.log(this.listeJoueurs[i].getClan());
+                if(this.listeJoueurs[i].getClan()===this.ordreClans[indexClan]){
+                    found=true;
+                    this.auTourDuJoueur=i;
+                    break;
+                }
+            }
+        }
+
+        // 3 5 1 4 2 6
+        console.log("Dans l'array : "+this.auTourDuJoueur+", pseudo : "+
+            this.listeJoueurs[this.auTourDuJoueur].pseudoUtilisateur+", position on board : "+
+            this.listeJoueurs[this.auTourDuJoueur].getPositionOnBoard());
         return this.aQuiLeTour();
     }
 

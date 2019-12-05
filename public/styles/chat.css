@@ -326,8 +326,7 @@ Barre de navigation entre onglet
     font-size:large;
 }
 .containTour{
-    margin-left:auto;
-    margin-right:auto;
+    margin:auto;
     width:200px;
 }
 
@@ -341,9 +340,9 @@ Barre de navigation entre onglet
 }
 
 .englobeJ{
-    margin-left:auto;
-    margin-right:auto;
+    margin:auto;
     width:200px;
+    height:100px;
 }
 
 .nbJetons{
@@ -363,7 +362,7 @@ Barre de navigation entre onglet
 /* mise en place des joueurs */
 .joueur{
     position:absolute;
-    width:30vw;
+    /*width:30vw;
     /*height:300px;*/
     margin-top:50px;
 }
@@ -395,8 +394,8 @@ Barre de navigation entre onglet
 
 .joueur > aside {
     /*width:50%;*/
-    margin-left:auto;
-    margin-right:auto;
+    margin:auto;
+    display:flex;
 }
 
 .joueur:nth-of-type(1){
