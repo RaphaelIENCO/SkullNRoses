@@ -481,6 +481,8 @@ document.addEventListener("DOMContentLoaded",function(e) {
         if(jetonsRestant===null || jetonsRestant.length===0){
             // le joueur a perdu
             console.log("je n'ai plus de jetons, j'ai perdu");
+            //askingJetons(obj.idPartie,);
+            return;
         }
         let nbRoses=0;
         let nbSkulls=0;
@@ -501,31 +503,34 @@ document.addEventListener("DOMContentLoaded",function(e) {
 
             let roses = document.querySelector("body #parties #divPartie"+obj.idPartie+" .choix .jeton.roses");
             let skull = document.querySelector("body #parties #divPartie"+obj.idPartie+" .choix .jeton.skull");
-            roses.addEventListener("click",function(){
-                console.log("je choisis une rose");
-                //let choix = document.querySelector("body #parties #divPartie"+obj.idPartie+" .choix");
-                choix.innerHTML="";
-                choix.style.display="none";
-                let objEmit ={
-                    "idPartie" :obj.idPartie,
-                    "pseudo" : pseudo,
-                    "pose": "roses"
-                };
-                socket.emit("poseUnJeton",objEmit);
-            });
-            skull.addEventListener("click",function() {
-                console.log("je choisis un crâne");
-                //let choix = document.querySelector("body #parties #divPartie"+obj.idPartie+" .choix");
-                choix.innerHTML="";
-                choix.style.display="none";
-                let objEmit ={
-                    "idPartie" :obj.idPartie,
-                    "pseudo" : pseudo,
-                    "pose": "skull"
-                };
-                socket.emit("poseUnJeton",objEmit);
-            });
-
+            if(nbRoses>0){
+                roses.addEventListener("click",function(){
+                    console.log("je choisis une rose");
+                    //let choix = document.querySelector("body #parties #divPartie"+obj.idPartie+" .choix");
+                    choix.innerHTML="";
+                    choix.style.display="none";
+                    let objEmit ={
+                        "idPartie" :obj.idPartie,
+                        "pseudo" : pseudo,
+                        "pose": "roses"
+                    };
+                    socket.emit("poseUnJeton",objEmit);
+                });
+            }
+            if(nbSkulls>0){
+                skull.addEventListener("click",function() {
+                    console.log("je choisis un crâne");
+                    //let choix = document.querySelector("body #parties #divPartie"+obj.idPartie+" .choix");
+                    choix.innerHTML="";
+                    choix.style.display="none";
+                    let objEmit ={
+                        "idPartie" :obj.idPartie,
+                        "pseudo" : pseudo,
+                        "pose": "skull"
+                    };
+                    socket.emit("poseUnJeton",objEmit);
+                });
+            }
         },{once : true}); // supprime l'event listner après premiere utilisation
     });
 
