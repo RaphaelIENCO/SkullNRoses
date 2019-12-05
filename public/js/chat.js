@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
     var BtnRechercher = document.getElementById('btnRechercher0');
     //var inputMessage = document.getElementById('monMessage');
     //var modalIMG = document.getElementById('bcImage');
-    var resultIMG = document.getElementById('bcResults');
+    //var resultIMG = document.getElementById('bcResults0');
     var btnInvite = document.getElementById('btnInviter');
     var btnLancerPartie = document.getElementById('btnLancerPartie');
     var menuInvite = document.getElementById('bcMenuInvite');
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
     BtnEnvoyer.addEventListener('click',function(){ envoiMSG(0); });
     BtnImage.addEventListener('click',function(){envoiIMG(0)});
     BtnFermer.addEventListener('click',function(){fermerIMG(0)});
-    BtnRechercher.addEventListener('click',rechercheIMG);
+    BtnRechercher.addEventListener('click',function(){rechercheIMG(0)});
     btnInvite.addEventListener('click',afficheInvite);
     btnFermerInvite.addEventListener('click',fermerInvite);
     ongletChat.addEventListener('click',openChat);
@@ -145,10 +145,14 @@ document.addEventListener("DOMContentLoaded",function(e) {
         modalIMG.style.display = "none";
     }
 
-    function rechercheIMG(){
-        var recherche = document.getElementById('recherche').value;
+    function rechercheIMG(id){
+        var recherche = document.getElementById("recherche"+id).value;
         recherche = recherche.replace(/ /g,"+");
         //console.log(recherche);
+        let modalIMG = document.getElementById('bcImage'+id);
+        let resultIMG = document.getElementById('bcResults'+id);
+        resultIMG.innerHTML = "";
+
 
         var request = new XMLHttpRequest();
 
@@ -168,6 +172,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
                 img.addEventListener('click',function(){
                     var message = "[img:"+gif.images.downsized.url+"]";
                     var obj = {
+                        "id" : id,
                         "from" :pseudo,
                         "to" : null,
                         "text" :message,
@@ -469,6 +474,9 @@ document.addEventListener("DOMContentLoaded",function(e) {
 
         let btnFermer = document.getElementById("btnFermer"+obj.id);
         btnFermer.addEventListener('click',function(){fermerIMG(obj.id)});
+
+        let btnRechercheIMG = document.getElementById("btnRechercher"+obj.id);
+        btnRechercheIMG.addEventListener('click',function(){rechercheIMG(obj.id)});
 
         if(listeJoueursDeLaPartie[obj.aQuiLeTour].pseudoUtilisateur===pseudo){
             console.log("c'est à mon tour de jouer");
