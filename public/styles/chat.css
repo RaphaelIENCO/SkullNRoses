@@ -22,6 +22,7 @@ body > div {
     width: 700px;
     background-color: beige;
     padding: 10px;
+    z-index:3;
 }
 .content h2, .content h3 {
     position: absolute;
