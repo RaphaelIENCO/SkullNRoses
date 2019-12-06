@@ -632,6 +632,9 @@ document.addEventListener("DOMContentLoaded",function(e) {
         spanJoueurCourant.innerHTML = obj.pseudo;
         spanIndication.innerHTML = " a gagné l'enchère avec "+ obj.enchereLaPlusForte.valeurEnchere +" !";
 
+        let statutEnchere = document.querySelector("body #parties #divPartie"+obj.idPartie+" .statutEnchere");
+        statutEnchere.innerHTML="";
+        statutEnchere.style.display="none";
     });
 
     function askingEncheres(idPartie,pseudo){
