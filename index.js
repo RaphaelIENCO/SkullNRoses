@@ -279,7 +279,7 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
 
     socket.on("proposeEnchere", function(obj){
         let idPartie=obj.idPartie;let pseudo=obj.pseudo;
-        console.log(obj);
+        //console.log(obj);
         let encherePropose=obj.valeurEnchere;
         let enchereMax=false;
 
@@ -288,7 +288,10 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
         let enchereLaPlusForte=null;
         partieEnCours.forEach(function(partie){
             if(partie.getIdPartie()===idPartie){
+                console.log(partie.getNbDeJetonsPoses());
+                console.log(encherePropose);
                 if(partie.getNbDeJetonsPoses()===encherePropose){
+                    console.log("encherMax = TRUE");
                     enchereMax=true;
                 }
                 partie.setEnchereLaPlusForte(pseudo,encherePropose);
@@ -301,6 +304,13 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
         if(enchereMax){
             console.log("- enchere max "+pseudo+" doit retrourner les jetons");
             // socket.emit gagneEnchere
+            let objetAEmit = {
+                "idPartie" : idPartie,
+                "pseudo" : pseudo,
+                "enchereLaPlusForte" : enchereLaPlusForte,
+                "joueurSuivant" : joueurSuivant
+            };
+            emitToPartie("gagneEnchere",objetAEmit,idPartie);
             return;
         }
 

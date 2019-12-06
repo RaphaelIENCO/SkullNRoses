@@ -587,7 +587,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
             let toSend = {
                 "idPartie": obj.idPartie,
                 "pseudo":pseudo,
-                "valeurEnchere":inputValue
+                "valeurEnchere":Number(inputValue)
             };
             socket.emit("proposeEnchere",toSend);
 
@@ -612,6 +612,15 @@ document.addEventListener("DOMContentLoaded",function(e) {
                 askingEncheres(obj.idPartie,listeJoueursParPartie[i][1][obj.joueurSuivant].pseudoUtilisateur);
             }
         }
+    });
+
+    socket.on("gagneEnchere",function(obj){
+        let spanJoueurCourant = document.querySelector("body #parties #divPartie"+obj.idPartie+" .joueurCourant");
+        let spanIndication = document.querySelector("body #parties #divPartie"+obj.idPartie+" .indication");
+        console.log(obj.enchereLaPlusForte);
+        spanJoueurCourant.innerHTML = obj.pseudo;
+        spanIndication.innerHTML = " a gagné l'enchère avec "+ obj.enchereLaPlusForte.valeurEnchere +" !";
+
     });
 
     function askingEncheres(idPartie,pseudo){
