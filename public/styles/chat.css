@@ -485,3 +485,26 @@ Barre de navigation entre onglet
     display: none;
 
 }
+
+.contentSeCoucher{
+    float:left;
+    margin:auto;
+    width:100px;
+}
+
+.textSeCoucher{
+    display:block;
+    margin:auto;
+}
+
+.buttonSeCoucher{
+    float:left;
+    margin:auto;
+}
+
+.cross {
+    /*width: 100px;
+    height: 100px;*/
+    background: linear-gradient(to left bottom, transparent 45%, #d00 45%, #d00 55%,  transparent 55%),
+    linear-gradient(to right bottom, transparent 45%, #d00 45%, #d00 55%,  transparent 55%);
+}
