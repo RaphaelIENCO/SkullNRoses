@@ -599,17 +599,28 @@ document.addEventListener("DOMContentLoaded",function(e) {
     socket.on("phaseEnchere",function(obj){
         console.log("phaseEnchereReçu");
         console.log(obj);
+        let jSuivant = obj.joueurSuivant;
+        let idPartie = obj.idPartie;
 
         // update affichage
         let divEnchere= document.querySelector("body #parties #divPartie"+obj.idPartie+" .enchereStatut");
         divEnchere.style.display="block";
         divEnchere.innerHTML=obj.pseudo+" detient la plus haute enchère qui est de "+obj.enchereLaPlusForte.valeurEnchere+" jetons.";
 
+        let spanJoueurCourant = document.querySelector("body #parties #divPartie"+idPartie+" .joueurCourant");
+        let spanIndication = document.querySelector("body #parties #divPartie"+idPartie+" .indication");
+        for(let i=0;i<listeJoueursParPartie.length;i++){
+            if(listeJoueursParPartie[i][0]===idPartie){
+                spanJoueurCourant.innerHTML = listeJoueursParPartie[i][1][jSuivant].pseudoUtilisateur;
+            }
+        }
+        spanIndication.innerHTML = " faites votre enchère !";
+
         // au joueur suivant
         if(obj.pseudo!==pseudo){return;} // permet de faire le prochain emit qu'une fois
         for(let i=0;i<listeJoueursParPartie.length;i++){
-            if(listeJoueursParPartie[i][0]===obj.idPartie){
-                askingEncheres(obj.idPartie,listeJoueursParPartie[i][1][obj.joueurSuivant].pseudoUtilisateur);
+            if(listeJoueursParPartie[i][0]===idPartie){
+                askingEncheres(obj.idPartie,listeJoueursParPartie[i][1][jSuivant].pseudoUtilisateur);
             }
         }
     });
@@ -617,7 +628,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
     socket.on("gagneEnchere",function(obj){
         let spanJoueurCourant = document.querySelector("body #parties #divPartie"+obj.idPartie+" .joueurCourant");
         let spanIndication = document.querySelector("body #parties #divPartie"+obj.idPartie+" .indication");
-        console.log(obj.enchereLaPlusForte);
+        //console.log(obj.enchereLaPlusForte);
         spanJoueurCourant.innerHTML = obj.pseudo;
         spanIndication.innerHTML = " a gagné l'enchère avec "+ obj.enchereLaPlusForte.valeurEnchere +" !";
 
@@ -655,12 +666,21 @@ document.addEventListener("DOMContentLoaded",function(e) {
             let nbPose = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .englobeJ .nbJetons");
             nbPose.innerHTML=parseInt(nbPose.innerHTML)+1;
         }
+        let spanJoueurCourant = document.querySelector("body #parties #divPartie"+idPartie+" .joueurCourant");
+        let spanIndication = document.querySelector("body #parties #divPartie"+idPartie+" .indication");
+        //console.log(listeJoueursParPartie);
+        for(let i=0;i<listeJoueursParPartie.length;i++){
+            if(listeJoueursParPartie[i][0]===idPartie){
+                spanJoueurCourant.innerHTML = listeJoueursParPartie[i][1][jSuivant].pseudoUtilisateur;
+            }
+        }
+        spanIndication.innerHTML = " choisissez un disque à empiler";
 
         // au joueur suivant
         if(joueurQuiAPose!==pseudo){return;} // permet de faire le prochain emit qu'une fois
         for(let i=0;i<listeJoueursParPartie.length;i++){
             if(listeJoueursParPartie[i][0]===idPartie){
-                console.log("partie trouve");
+                //console.log("partie trouve");
                 askingJetons(idPartie,listeJoueursParPartie[i][1][jSuivant].pseudoUtilisateur);
             }
         }
