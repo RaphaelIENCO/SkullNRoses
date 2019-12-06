@@ -577,11 +577,11 @@ document.addEventListener("DOMContentLoaded",function(e) {
                 return;
             }
 
-            if(Number(inputValue)===obj.nbJetonsJoues){
+            /*if(Number(inputValue)===obj.nbJetonsJoues){
                 console.log("enchere gagne -> a implem");
                 // emit something
                 return;
-            }
+            }*/
             let toSend = {
                 "idPartie": obj.idPartie,
                 "pseudo":pseudo,
@@ -681,8 +681,11 @@ document.addEventListener("DOMContentLoaded",function(e) {
         spanIndication.innerHTML = " a gagné l'enchère avec "+ obj.enchereLaPlusForte.valeurEnchere +" !";
 
         let statutEnchere = document.querySelector("body #parties #divPartie"+obj.idPartie+" .statutEnchere");
-        statutEnchere.innerHTML="";
-        statutEnchere.style.display="none";
+        if(statutEnchere !== null){
+            statutEnchere.innerHTML="";
+            statutEnchere.style.display="none";
+        }
+
     });
 
     function askingEncheres(idPartie,pseudo){

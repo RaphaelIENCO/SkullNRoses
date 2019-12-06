@@ -399,7 +399,6 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
     });
 
     socket.on("jetonRetourne",function(obj){
-        //verifie si retourne tete de mort
         console.log("---------- jetonRetourne");
         let position = obj.position;
         let idPartie = obj.idPartie;
@@ -410,7 +409,11 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
         //console.log(position);
         if(position === positionJoueur){
             console.log("Le joueur tire dans sa pile");
+            // tester si il a tout tiré pour ajouter les events listner sur les piles de l'autre
         }
+        // tester si il vient de tirer dans une autre pile
+
+        //verifie si retourne tete de mort (peut etre au début ?)
 
     });
 
