@@ -288,10 +288,10 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
         let enchereLaPlusForte=null;
         partieEnCours.forEach(function(partie){
             if(partie.getIdPartie()===idPartie){
-                console.log(partie.getNbDeJetonsPoses());
-                console.log(encherePropose);
+                //console.log(partie.getNbDeJetonsPoses());
+                //console.log(encherePropose);
                 if(partie.getNbDeJetonsPoses()===encherePropose){
-                    console.log("encherMax = TRUE");
+                    console.log("---encherMax = TRUE");
                     enchereMax=true;
                 }
                 partie.setEnchereLaPlusForte(pseudo,encherePropose);
@@ -311,6 +311,14 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
                 "joueurSuivant" : joueurSuivant
             };
             emitToPartie("gagneEnchere",objetAEmit,idPartie);
+
+            let position = getPositionJoueur(idPartie,pseudo);
+            let obj = {
+                "idPartie" : idPartie,
+                "pseudo" : pseudo,
+                "position" : position
+            };
+            clients[pseudo].emit("phaseRetourneJetons",obj);
             return;
         }
 
@@ -357,6 +365,37 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
         };
         clients[pseudo].emit("returnAskEnchere",objetAEmit);
     });
+
+    socket.on("retourneJeton",function(obj){
+        emitToPartie("retourneJeton",obj,obj.idPartie);
+    });
+
+    socket.on("jetonRetourne",function(obj){
+        //verifie si retourne tete de mort
+        console.log("---------- jetonRetourne");
+        let position = obj.position;
+        let idPartie = obj.idPartie;
+        let pseudo = obj.pseudo;
+
+        let positionJoueur = getPositionJoueur(idPartie,pseudo);
+        //console.log(getPositionJoueur(idPartie,pseudo));
+        //console.log(position);
+        if(position === positionJoueur){
+            console.log("Le joueur tire dans sa pile");
+        }
+
+    });
+
+    function getPositionJoueur(idPartie,pseudo){
+        let retour;
+        partieEnCours.forEach(function(partie){
+            if(partie.getIdPartie()===idPartie){
+                let j = partie.getJoueurByName(pseudo);
+                retour = j.getPositionOnBoard();
+            }
+        });
+        return retour;
+    }
 
     function emitToPartie(typeEmit,objetAEmit,idPartie){
         partieEnCours.forEach(function(partie){
