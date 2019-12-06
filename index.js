@@ -288,8 +288,6 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
         let enchereLaPlusForte=null;
         partieEnCours.forEach(function(partie){
             if(partie.getIdPartie()===idPartie){
-                console.log(partie.getNbDeJetonsPoses());
-                console.log(encherePropose);
                 if(partie.getNbDeJetonsPoses()===encherePropose){
                     console.log("encherMax = TRUE");
                     enchereMax=true;
@@ -356,6 +354,36 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
             "enchereLaPlusForte" : enchereLaPlusForte
         };
         clients[pseudo].emit("returnAskEnchere",objetAEmit);
+    });
+
+    socket.on("jeMeCouche", function(obj) {
+        let idPartie = obj.idPartie;let pseudo = obj.pseudo;
+
+        let position=null;
+        let nbJetonsJoues=null;
+        let enchereLaPlusForte=null;
+        let joueurSuivant=null;
+        partieEnCours.forEach(function(partie) {
+            if (partie.getIdPartie() === idPartie) {
+                let j = partie.getJoueurByName(pseudo);
+                j.seCouche();
+                position=j.getPositionOnBoard();
+                nbJetonsJoues=partie.getNbDeJetonsPoses();
+                enchereLaPlusForte=partie.getEnchereLaPlusForte();
+                joueurSuivant=partie.auJoueurSuivant();
+            }
+        });
+
+        let objetAEmit = {
+            "idPartie" : idPartie,
+            "pseudo" : pseudo,
+            "position" : position,
+            "nbJetonsJoues" : nbJetonsJoues,
+            "enchereLaPlusForte" : enchereLaPlusForte,
+            "joueurSuivant" : joueurSuivant
+        };
+
+        emitToPartie("seCouche",objetAEmit,idPartie);
     });
 
     function emitToPartie(typeEmit,objetAEmit,idPartie){

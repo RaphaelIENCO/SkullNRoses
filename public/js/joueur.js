@@ -63,6 +63,7 @@ class Joueur{
     }
 
     seCouche(){this.actif=false;}
+    seReleve(){this.actif=true;}
 
     getActif(){return this.actif;}
 
