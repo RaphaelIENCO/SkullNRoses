@@ -62,6 +62,11 @@ class Joueur{
         return false;
     }
 
+    retourneJeton(){
+        let jeton = this.jetonsPoses.pop();
+        return jeton;
+    }
+
     seCouche(){this.actif=false;}
     seReleve(){this.actif=true;}
 

@@ -316,7 +316,7 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
                 "pseudo" : pseudo,
                 "position" : position
             };
-            clients[pseudo].emit("phaseRetourneJetons",obj);
+            clients[pseudo].emit("phaseRetourneJetonsPerso",obj);
             return;
         }
 
@@ -455,7 +455,7 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
             "pseudo" : pseudo,
             "position" : position
         };
-        clients[pseudo].emit("phaseRetourneJetons",toSend);
+        clients[pseudo].emit("phaseRetourneJetonsPerso",toSend);
     });
 
     socket.on("retourneJeton",function(obj){
@@ -469,11 +469,42 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
         let pseudo = obj.pseudo;
 
         let positionJoueur = getPositionJoueur(idPartie,pseudo);
-        //console.log(getPositionJoueur(idPartie,pseudo));
-        //console.log(position);
+        let j = getJoueurbyPosition(idPartie,position);
+        //console.log(j);
+        let jeton = j.retourneJeton();
+        let jetonsPoses = j.getJetonsPoses();
+
+        if(jeton === "skull"){
+            emitToPartie("retourneCrane",obj,idPartie);  // emit a tt le monde qu'il a retourné un crane
+            //puis emit a celui qui possedait le crane
+            return;
+        }
+
         if(position === positionJoueur){
             console.log("Le joueur tire dans sa pile");
-            // tester si il a tout tiré pour ajouter les events listner sur les piles de l'autre
+            if(jetonsPoses.length === 0){
+                console.log("---Pile vide ----");
+                //emit a l'acteur pour ajouter les eventlistner sur les piles des auttres
+                let positions = [];
+
+                partieEnCours.forEach(function(partie){
+                    if(partie.getIdPartie()===idPartie){
+                        partie.getListeJoueurs().forEach(function(joueur){
+                            if(position !== joueur.getPositionOnBoard()){
+                                positions.push(joueur.getPositionOnBoard());
+                            }
+                        });
+                    }
+                });
+
+                let objAEmit = {
+                    "idPartie" : idPartie,
+                    "pseudo" : pseudo,
+                    "position" : positions
+                };
+
+                clients[pseudo].emit("phaseRetourneJetonsAutres",objAEmit);
+            }
         }
         // tester si il vient de tirer dans une autre pile
 
@@ -483,10 +514,29 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
 
     function getPositionJoueur(idPartie,pseudo){
         let retour;
+        let j = getJoueurbyPseudo(idPartie,pseudo);
+        return j.getPositionOnBoard();
+    }
+
+    function getJoueurbyPseudo(idPartie,pseudo){
+        let retour;
         partieEnCours.forEach(function(partie){
             if(partie.getIdPartie()===idPartie){
-                let j = partie.getJoueurByName(pseudo);
-                retour = j.getPositionOnBoard();
+                retour = partie.getJoueurByName(pseudo);
+            }
+        });
+        return retour;
+    }
+
+    function getJoueurbyPosition(idPartie,position){
+        let retour;
+        partieEnCours.forEach(function(partie){
+            if(partie.getIdPartie()===idPartie){
+                partie.getListeJoueurs().forEach(function(joueur){
+                    if(joueur.getPositionOnBoard() === position){
+                        retour = joueur;
+                    }
+                });
             }
         });
         return retour;
