@@ -682,12 +682,17 @@ document.addEventListener("DOMContentLoaded",function(e) {
         spanJoueurCourant.innerHTML = obj.pseudo;
         spanIndication.innerHTML = " a gagné l'enchère avec "+ obj.enchereLaPlusForte.valeurEnchere +" !";
 
-        let statutEnchere = document.querySelector("body #parties #divPartie"+obj.idPartie+" .statutEnchere");
+        let statutEnchere = document.querySelector("body #parties #divPartie"+obj.idPartie+" .enchereStatut");
         if(statutEnchere !== null){
             statutEnchere.innerHTML="";
             statutEnchere.style.display="none";
         }
 
+        let choix = document.querySelector("body #parties #divPartie"+obj.idPartie+" .choix");
+        if(choix !== null){
+            choix.innerHTML="";
+            choix.style.display="none";
+        }
     });
 
     function askingEncheres(idPartie,pseudo){
@@ -748,7 +753,15 @@ document.addEventListener("DOMContentLoaded",function(e) {
         jCouche.className+=" cross";
 
         // au joueur suivant
-        if(obj.pseudo!==pseudo){return;} // permet de faire le prochain emit qu'une fois
+        if(obj.pseudo!==pseudo){return;}
+        if(obj.nbJoueurEncoreEnListe===1){
+            // le joueur à gagné la phase d'enchere car tlm s'est couché sauf lui
+            let objAEmit = {
+                "idPartie": obj.idPartie
+            };
+            socket.emit("gagneEnchereParAbandon",objAEmit);
+            return;
+        }
         for(let i=0;i<listeJoueursParPartie.length;i++){
             if(listeJoueursParPartie[i][0]===obj.idPartie){
                 askingEncheres(obj.idPartie,listeJoueursParPartie[i][1][obj.joueurSuivant].pseudoUtilisateur);
