@@ -48,7 +48,6 @@ class Partie {
             this.listeJoueurs[i].seReleve();
         }
 
-
         let toSend = {
             "dejaSet":true,
             "celuiQuiChoisit":null
@@ -79,6 +78,19 @@ class Partie {
                 this.auTourDuJoueur=i;
             }
         }
+    }
+
+    isDernierSurvivant(pseudo){
+        for(let i=0;i<this.listeJoueurs.length;i++){
+            if(this.listeJoueurs[i].getPseudoUtilisateur()===pseudo){
+                if(this.listeJoueurs[i].isPerdant()){return false;}
+                continue;
+            }
+            if(!this.listeJoueurs[i].isPerdant()){
+                return false;
+            }
+        }
+        return true;
     }
 
     getEnchereLaPlusForte(){
