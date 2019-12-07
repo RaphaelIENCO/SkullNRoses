@@ -487,6 +487,18 @@ document.addEventListener("DOMContentLoaded",function(e) {
         }
     });
 
+
+    /** ************************** LES ENCHERES ************************** **/
+
+    function askingJetons(idPartie,pseudo){
+        let askFor = {
+            "idPartie" :idPartie,
+            "pseudo" : pseudo
+        };
+        socket.emit("getJetons",askFor);
+        // envoyer requete au joueur suivant
+    }
+
     socket.on("returnJetons",function(obj){
         if(obj.pseudo!==pseudo){return;}
         console.log(obj);
@@ -554,6 +566,46 @@ document.addEventListener("DOMContentLoaded",function(e) {
         },{once : true}); // supprime l'event listner après premiere utilisation
     });
 
+    socket.on("poserJeton",function(obj){
+        let joueurQuiAPose=obj.pseudo;let idPartie=obj.idPartie;let jSuivant=obj.joueurSuivant;
+        let position=obj.position;let nbJetonsRestant=obj.nbJetonsRestant;
+        console.log(joueurQuiAPose+" a posé un jeton");
+        let nbJeton = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") footer .englobeJ .nbJetons");
+        nbJeton.innerHTML=nbJetonsRestant;
+
+        let aside = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside");
+        if(aside.innerHTML===""){
+            if(listeClans[position-1]==="cyborgs"|| listeClans[position-1]==="jokers" || listeClans[position-1]==="swallows"){
+                aside.innerHTML= "<div class='englobeJ'><div class=\"nbJetons "+listeClans[position-1]+"\">1</div><div class=\"jeton "+listeClans[position-1]+"\"></div></div>";
+            }else{
+                aside.innerHTML= "<div class='englobeJ'><div class=\"jeton "+listeClans[position-1]+"\"></div><div class=\"nbJetons "+listeClans[position-1]+"\">1</div></div>";
+            }
+        }else{
+            let nbPose = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .englobeJ .nbJetons");
+            nbPose.innerHTML=parseInt(nbPose.innerHTML)+1;
+        }
+        let spanJoueurCourant = document.querySelector("body #parties #divPartie"+idPartie+" .joueurCourant");
+        let spanIndication = document.querySelector("body #parties #divPartie"+idPartie+" .indication");
+        //console.log(listeJoueursParPartie);
+        for(let i=0;i<listeJoueursParPartie.length;i++){
+            if(listeJoueursParPartie[i][0]===idPartie){
+                spanJoueurCourant.innerHTML = listeJoueursParPartie[i][1][jSuivant].pseudoUtilisateur;
+            }
+        }
+        spanIndication.innerHTML = " choisissez un disque à empiler";
+
+        // au joueur suivant
+        if(joueurQuiAPose!==pseudo){return;} // permet de faire le prochain emit qu'une fois
+        for(let i=0;i<listeJoueursParPartie.length;i++){
+            if(listeJoueursParPartie[i][0]===idPartie){
+                //console.log("partie trouve");
+                askingJetons(idPartie,listeJoueursParPartie[i][1][jSuivant].pseudoUtilisateur);
+            }
+        }
+    });
+
+    /** ************************** LES ENCHERES ************************** **/
+
     function setUpForEnchere(obj){
         let addEnchere="<div class='contentEnchere'>" +
             "<label for=\"enchere"+obj.idPartie+"\" class='labelEnchere'>De combien pariez-vous (" +
@@ -593,56 +645,6 @@ document.addEventListener("DOMContentLoaded",function(e) {
             choix.style.display="none";
         });
     }
-
-    function setUpSeCoucher(obj){
-        let contentAddSeCoucher = "<div class='contentSeCoucher'>" +
-                                    "<span class='textSeCoucher'>Se coucher</span><button class='buttonSeCoucher'>✘</button>" +
-                                  "</div>";
-
-        let choix = document.querySelector("body #parties #divPartie"+obj.idPartie+" .choix");
-        //choix.innerHTML+=contentAddSeCoucher;
-        let divContent=document.createElement("div");
-        divContent.className="contentSeCoucher";
-        let span=document.createElement("span");
-        span.className="textSeCoucher";
-        span.innerHTML="Se coucher";
-        let button=document.createElement("button");
-        button.className="buttonSeCoucher";
-        button.innerHTML="✘";
-
-        divContent.appendChild(span);
-        divContent.appendChild(button);
-        choix.appendChild(divContent);
-
-        let buttonSeCoucher=document.querySelector("body #parties #divPartie"+obj.idPartie+" .choix .contentSeCoucher .buttonSeCoucher");
-        buttonSeCoucher.addEventListener("click",function () {
-            console.log("je me couche");
-            let toSend = {
-                "idPartie": obj.idPartie,
-                "pseudo":pseudo
-            };
-            socket.emit("jeMeCouche",toSend);
-            choix.innerHTML="";
-            choix.style.display="none";
-        });
-    }
-
-    socket.on("seCouche",function(obj){
-        console.log(obj.pseudo+" se couche");
-        console.log(obj);
-
-        // changer le style du joueur pour qu'on voit qu'il s'est couché
-        let jCouche= document.querySelector("body #parties #divPartie"+obj.idPartie+" .joueur:nth-of-type("+obj.position+")");
-        jCouche.className+=" cross";
-
-        // au joueur suivant
-        if(obj.pseudo!==pseudo){return;} // permet de faire le prochain emit qu'une fois
-        for(let i=0;i<listeJoueursParPartie.length;i++){
-            if(listeJoueursParPartie[i][0]===obj.idPartie){
-                askingEncheres(obj.idPartie,listeJoueursParPartie[i][1][obj.joueurSuivant].pseudoUtilisateur);
-            }
-        }
-    });
 
     socket.on("phaseEnchere",function(obj){
         console.log("phaseEnchereReçu");
@@ -704,6 +706,56 @@ document.addEventListener("DOMContentLoaded",function(e) {
         setUpSeCoucher(obj);
     });
 
+    function setUpSeCoucher(obj){
+        let contentAddSeCoucher = "<div class='contentSeCoucher'>" +
+            "<span class='textSeCoucher'>Se coucher</span><button class='buttonSeCoucher'>✘</button>" +
+            "</div>";
+
+        let choix = document.querySelector("body #parties #divPartie"+obj.idPartie+" .choix");
+        //choix.innerHTML+=contentAddSeCoucher;
+        let divContent=document.createElement("div");
+        divContent.className="contentSeCoucher";
+        let span=document.createElement("span");
+        span.className="textSeCoucher";
+        span.innerHTML="Se coucher";
+        let button=document.createElement("button");
+        button.className="buttonSeCoucher";
+        button.innerHTML="✘";
+
+        divContent.appendChild(span);
+        divContent.appendChild(button);
+        choix.appendChild(divContent);
+
+        let buttonSeCoucher=document.querySelector("body #parties #divPartie"+obj.idPartie+" .choix .contentSeCoucher .buttonSeCoucher");
+        buttonSeCoucher.addEventListener("click",function () {
+            console.log("je me couche");
+            let toSend = {
+                "idPartie": obj.idPartie,
+                "pseudo":pseudo
+            };
+            socket.emit("jeMeCouche",toSend);
+            choix.innerHTML="";
+            choix.style.display="none";
+        });
+    }
+
+    socket.on("seCouche",function(obj){
+        console.log(obj.pseudo+" se couche");
+        console.log(obj);
+
+        // changer le style du joueur pour qu'on voit qu'il s'est couché
+        let jCouche= document.querySelector("body #parties #divPartie"+obj.idPartie+" .joueur:nth-of-type("+obj.position+")");
+        jCouche.className+=" cross";
+
+        // au joueur suivant
+        if(obj.pseudo!==pseudo){return;} // permet de faire le prochain emit qu'une fois
+        for(let i=0;i<listeJoueursParPartie.length;i++){
+            if(listeJoueursParPartie[i][0]===obj.idPartie){
+                askingEncheres(obj.idPartie,listeJoueursParPartie[i][1][obj.joueurSuivant].pseudoUtilisateur);
+            }
+        }
+    });
+
     socket.on("returnEncherePerduOuCouche",function(obj){
         console.log("returnEncherePerduOuCouche");
         let objAEmit={
@@ -722,54 +774,6 @@ document.addEventListener("DOMContentLoaded",function(e) {
             }
         }
     });
-
-
-    socket.on("poserJeton",function(obj){
-        let joueurQuiAPose=obj.pseudo;let idPartie=obj.idPartie;let jSuivant=obj.joueurSuivant;
-        let position=obj.position;let nbJetonsRestant=obj.nbJetonsRestant;
-        console.log(joueurQuiAPose+" a posé un jeton");
-        let nbJeton = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") footer .englobeJ .nbJetons");
-        nbJeton.innerHTML=nbJetonsRestant;
-
-        let aside = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside");
-        if(aside.innerHTML===""){
-            if(listeClans[position-1]==="cyborgs"|| listeClans[position-1]==="jokers" || listeClans[position-1]==="swallows"){
-                aside.innerHTML= "<div class='englobeJ'><div class=\"nbJetons "+listeClans[position-1]+"\">1</div><div class=\"jeton "+listeClans[position-1]+"\"></div></div>";
-            }else{
-                aside.innerHTML= "<div class='englobeJ'><div class=\"jeton "+listeClans[position-1]+"\"></div><div class=\"nbJetons "+listeClans[position-1]+"\">1</div></div>";
-            }
-        }else{
-            let nbPose = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .englobeJ .nbJetons");
-            nbPose.innerHTML=parseInt(nbPose.innerHTML)+1;
-        }
-        let spanJoueurCourant = document.querySelector("body #parties #divPartie"+idPartie+" .joueurCourant");
-        let spanIndication = document.querySelector("body #parties #divPartie"+idPartie+" .indication");
-        //console.log(listeJoueursParPartie);
-        for(let i=0;i<listeJoueursParPartie.length;i++){
-            if(listeJoueursParPartie[i][0]===idPartie){
-                spanJoueurCourant.innerHTML = listeJoueursParPartie[i][1][jSuivant].pseudoUtilisateur;
-            }
-        }
-        spanIndication.innerHTML = " choisissez un disque à empiler";
-
-        // au joueur suivant
-        if(joueurQuiAPose!==pseudo){return;} // permet de faire le prochain emit qu'une fois
-        for(let i=0;i<listeJoueursParPartie.length;i++){
-            if(listeJoueursParPartie[i][0]===idPartie){
-                //console.log("partie trouve");
-                askingJetons(idPartie,listeJoueursParPartie[i][1][jSuivant].pseudoUtilisateur);
-            }
-        }
-    });
-
-    function askingJetons(idPartie,pseudo){
-        let askFor = {
-            "idPartie" :idPartie,
-            "pseudo" : pseudo
-        };
-        socket.emit("getJetons",askFor);
-        // envoyer requete au joueur suivant
-    }
 
     socket.on("phaseRetourneJetons",function(obj){
         // mettre eventlistener sur la pile du joueur
