@@ -788,7 +788,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
         }
     });
 
-    socket.on("phaseRetourneJetons",function(obj){
+    socket.on("phaseRetourneJetonsPerso",function(obj){
         // mettre eventlistener sur la pile du joueur
         let position = obj.position;
         let idPartie = obj.idPartie;
@@ -800,6 +800,28 @@ document.addEventListener("DOMContentLoaded",function(e) {
             socket.emit("retourneJeton",obj);
         });
         // obliger à clicker sur sa pile jusqu'à qu'elle soit vide puis ajouter eventlistner sur les obj .jeton
+    });
+
+    socket.on("phaseRetourneJetonsAutres",function(obj){
+        console.log(obj);
+        let idPartie = obj.idPartie;
+        let pseudo = obj.pseudo;
+        let positions = obj.position;
+
+        positions.forEach(function(position){
+            let nbPose = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .englobeJ .nbJetons");
+            let jeton = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .englobeJ .jeton");
+
+            jeton.addEventListener('click',function(){
+                console.log("click sur jetons");
+                let objAEmit = {
+                    "idPartie" : idPartie,
+                    "pseudo" : pseudo,
+                    "position" :position
+                };
+                socket.emit("retourneJeton",objAEmit);
+            });
+        });
     });
 
     socket.on("retourneJeton",function(obj){ // pour l'affichage à tt le monde
@@ -823,6 +845,20 @@ document.addEventListener("DOMContentLoaded",function(e) {
             "nbPose" : Number(nbPose.innerHTML)
         };
         socket.emit("jetonRetourne",obj);
+    });
+
+    socket.on("retourneCrane",function(obj){
+        console.log(obj);
+        let idPartie = obj.idPartie;
+        let pseudo = obj.pseudo;
+        let position = obj.position;
+        let spanJoueurCourant = document.querySelector("body #parties #divPartie"+idPartie+" .joueurCourant");
+        let spanIndication = document.querySelector("body #parties #divPartie"+idPartie+" .indication");
+
+        spanJoueurCourant.innerHTML = pseudo;
+        spanIndication.innerHTML = " a retourné un crane !";
+
+
     });
 
 });
