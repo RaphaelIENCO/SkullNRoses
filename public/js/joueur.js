@@ -15,6 +15,7 @@ class Joueur{
         this.actif=true;
         this.perdant=false;
         this.positionOnBord=numClan+1;
+        this.nbPoints=0;
 
         this.jetons=["roses","roses","roses","skull"];
         this.jetonsPoses=[];
@@ -64,6 +65,7 @@ class Joueur{
 
     retourneJeton(){
         let jeton = this.jetonsPoses.pop();
+        this.jetons.push(jeton);
         return jeton;
     }
 
@@ -77,5 +79,7 @@ class Joueur{
     isPerdant(){return this.perdant;}
 
     getClan(){return this.clan;}
+    getNbPoints(){return this.nbPoints;}
+    gagneUnPoint(){this.nbPoints++;return this.nbPoints;}
 }
 module.exports = Joueur;

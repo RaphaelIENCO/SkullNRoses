@@ -488,7 +488,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
     });
 
 
-    /** ************************** LES ENCHERES ************************** **/
+    /** ************************** LES PREPARATIFS ************************** **/
 
     function askingJetons(idPartie,pseudo){
         let askFor = {
@@ -795,7 +795,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
         let nbPose = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .englobeJ .nbJetons");
         let jeton = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .englobeJ .jeton");
         let divComptParis = document.createElement("div");
-        divComptParis.id = "comptParis";
+        divComptParis.className = "comptParis";
         divComptParis.style.display = "none";
         divComptParis.innerHTML = obj.nbParis;
 
@@ -803,7 +803,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
         parent.appendChild(divComptParis);
 
         jeton.addEventListener('click',function(){
-            let comptParis = document.querySelector("body #parties #divPartie"+idPartie+" #comptParis");
+            let comptParis = document.querySelector("body #parties #divPartie"+idPartie+" .comptParis");
             console.log("click sur jetons");
             let objAEmit = {
                 "idPartie" : idPartie,
@@ -821,13 +821,12 @@ document.addEventListener("DOMContentLoaded",function(e) {
         let pseudo = obj.pseudo;
         let positions = obj.position;
 
-
         positions.forEach(function(position){
             let nbPose = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .englobeJ .nbJetons");
             let jeton = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .englobeJ .jeton");
 
             jeton.addEventListener('click',function(){
-                let comptParis = document.querySelector("body #parties #divPartie"+idPartie+" #comptParis");
+                let comptParis = document.querySelector("body #parties #divPartie"+idPartie+" .comptParis");
                 console.log("click sur jetons");
                 let objAEmit = {
                     "idPartie" : idPartie,
@@ -845,7 +844,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
         let idPartie = obj.idPartie;
         let nbPose = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .englobeJ .nbJetons");
         let jeton = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .englobeJ .jeton");
-        let comptParis = document.querySelector("body #parties #divPartie"+idPartie +" #comptParis");
+        let comptParis = document.querySelector("body #parties #divPartie"+idPartie +" .comptParis");
 
         if(comptParis != null){
             let int = Number(comptParis.innerHTML);
@@ -892,15 +891,98 @@ document.addEventListener("DOMContentLoaded",function(e) {
         spanJoueurCourant.innerHTML = obj.pseudo;
         spanIndication.innerHTML = " a gagné un point !";
 
-        let comptParis = document.getElementById("comptParis");
+        let comptParis = document.querySelector("body #parties #divPartie"+idPartie +" .comptParis");
         if(comptParis !== null){
             comptParis.remove();
         }
         for (let i = 1; i <= obj.nbJoueurs; i++) {
-            let parent = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+i+") aside .englobeJ");
+            let parent = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+i+") aside");
             parent.innerHTML = "";
+            let joueur = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+i+")");
+            joueur.className="joueur";
         }
 
+        let gagnant = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+obj.position+") aside");
+        gagnant.className="etatJoueur carreRoses";
+
+        if(pseudo!==obj.pseudo){return;}
+        let objAEmit = {
+            "idPartie":obj.idPartie,
+            "joueurGagnantEnchere":obj.pseudo,
+            "joueurGagnantManche":obj.pseudo
+        };
+        socket.emit("prepareNextTurn",objAEmit);
     });
 
+    socket.on("choixPremierJoueur",function(obj){
+        console.log("choixPremierJoueur");
+        console.log(obj);
+
+        let spanJoueurCourant = document.querySelector("body #parties #divPartie"+obj.idPartie+" .joueurCourant");
+        let spanIndication = document.querySelector("body #parties #divPartie"+obj.idPartie+" .indication");
+        spanJoueurCourant.innerHTML=obj.pseudo;
+        spanIndication.innerHTML=" choisissez qui commencera lors du prochain tour.";
+
+        if(pseudo!==obj.pseudo){return;}
+        // ajouter listner a tout les footer de joueur
+        let joueurFooter;
+        for(let i=0;i<listeJoueursParPartie.length;i++){
+            if(listeJoueursParPartie[i][0]===obj.idPartie) {
+                for (let j=1;j<=listeJoueursParPartie[i][1].length;j++){
+                    joueurFooter = document.querySelector("body #parties #divPartie"+obj.idPartie+" .joueur:nth-of-type("+j+") footer");
+                    joueurFooter.addEventListener("click",function(){
+                        let toSend = {
+                            "idPartie":obj.idPartie,
+                            "position":j
+                        };
+                        socket.emit("returnChoixPremierJoueur",toSend);
+                    }, {once:true});
+                }
+                break;
+            }
+        }
+    });
+
+    socket.on("finPrepareTurn",function(obj){
+        console.log("finPrepareTurn");
+        console.log(obj);
+
+        let spanJoueurCourant = document.querySelector("body #parties #divPartie"+obj.idPartie+" .joueurCourant");
+        let spanIndication = document.querySelector("body #parties #divPartie"+obj.idPartie+" .indication");
+
+        spanJoueurCourant.innerHTML = obj.pseudo;
+        spanIndication.innerHTML = " choisissez un disque à empiler";
+
+        // on met a jour les nb de jetons
+        let nbJetonsRestant;
+        for(let i=0;i<listeJoueursParPartie.length;i++){
+            if(listeJoueursParPartie[i][0]===obj.idPartie){
+                for (let j=1;j<=listeJoueursParPartie[i][1].length;j++) {
+                    nbJetonsRestant = document.querySelector("body #parties #divPartie" + obj.idPartie + " .joueur:nth-of-type(" + j + ") .englobeJ .nbJetons");
+                    nbJetonsRestant.innerHTML=obj.nbDeJetonsRestantParJoueur[j-1];
+                }
+            }
+        }
+
+        console.log(" --- liste joueursParPartie --- ");
+        console.log(listeJoueursParPartie);
+        if(pseudo!==obj.pseudo){return;}
+        for(let i=0;i<listeJoueursParPartie.length;i++){
+            if(listeJoueursParPartie[i][0]===obj.idPartie){
+                console.log("try to ask jetons for : "+listeJoueursParPartie[i][1][obj.position-1].pseudoUtilisateur);
+                askingJetons(obj.idPartie,listeJoueursParPartie[i][1][obj.position-1].pseudoUtilisateur);
+            }
+        }
+    });
+
+    socket.on("gagneLaPartie",function(obj){
+        console.log("gagneLaPartie");
+        console.log(obj);
+
+        let spanJoueurCourant = document.querySelector("body #parties #divPartie"+obj.idPartie+" .joueurCourant");
+        let spanIndication = document.querySelector("body #parties #divPartie"+obj.idPartie+" .indication");
+
+        spanJoueurCourant.innerHTML = obj.gagnant;
+        spanIndication.innerHTML = " gagne la partie !";
+    });
 });

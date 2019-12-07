@@ -61,6 +61,10 @@ class Partie {
             toSend.dejaSet=false;
             toSend.celuiQuiChoisit=this.getProprietaireDuCrane();
         }
+        this.enchereLaPlusForte={
+            "pseudoJoueur" : null,
+            "valeurEnchere" : 0
+        };
         return toSend;
     }
 
@@ -154,6 +158,16 @@ class Partie {
             }
         }
         return nbJetonsPoses;
+    }
+
+    getNbDeJetonsParJoueur(){
+        let nbJetons=[];
+        for(let i=0;i<this.listeJoueurs.length;i++){
+            if(this.listeJoueurs[i].getJetonsPoses()!==0 && !this.listeJoueurs[i].isPerdant()){
+                nbJetons.push(this.listeJoueurs[i].getJetons().length);
+            }
+        }
+        return nbJetons;
     }
 
     getNbJoueurs(){

@@ -238,6 +238,8 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
             }
         });
 
+        console.log(jetonsRestant);
+
         let obj = {
             "idPartie" : idPartie,
             "pseudo" : pseudo,
@@ -348,21 +350,6 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
                 position=j.getPositionOnBoard();
             }
         });
-
-        if(aPerdu || !actif){
-            console.log(pseudo+" a perdu ou est déjà couché.");
-            // emit special pour passer direct au joueur suivant
-            let objetAEmit = {
-                "idPartie" : idPartie,
-                "pseudo" : pseudo,
-                "position" : position,
-                "nbJetonsJoues" : nbJetonsJoues,
-                "enchereLaPlusForte" : enchereLaPlusForte
-            };
-            clients[pseudo].emit("returnEncherePerduOuCouche",objetAEmit);
-            return;
-        }
-
         let objetAEmit = {
             "idPartie" : idPartie,
             "pseudo" : pseudo,
@@ -370,6 +357,12 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
             "nbJetonsJoues" : nbJetonsJoues,
             "enchereLaPlusForte" : enchereLaPlusForte
         };
+        if(aPerdu || !actif){
+            console.log(pseudo+" a perdu ou est déjà couché.");
+            // emit special pour passer direct au joueur suivant
+            clients[pseudo].emit("returnEncherePerduOuCouche",objetAEmit);
+            return;
+        }
         clients[pseudo].emit("returnAskEnchere",objetAEmit);
     });
 
@@ -478,6 +471,12 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
         let jetonsPoses = j.getJetonsPoses();
 
         if(jeton === "skull"){
+            partieEnCours.forEach(function(partie) {
+                if (partie.getIdPartie() === obj.idPartie) {
+                    partie.setProprietaireDuCrane(pseudo);
+                    console.log("proprietaire du crane : "+pseudo);
+                }
+            });
             emitToPartie("retourneCrane",obj,idPartie);  // emit a tt le monde qu'il a retourné un crane
             //puis emit a celui qui possedait le crane
             return;
@@ -489,21 +488,24 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
         if (nbParis<=0){
             console.log("Fin du retournage");
             let nbJoueurs;
+            let posJoueurGagnant;
             partieEnCours.forEach(function(partie){
                 if (partie.getIdPartie() === obj.idPartie) {
+                    let j = partie.getJoueurByName(partie.getEnchereLaPlusForte().pseudoJoueur);
+                    posJoueurGagnant = j.getPositionOnBoard();
+                    j.gagneUnPoint();
                     nbJoueurs = partie.getNbJoueurs();
                 }
             });
             let objRetour = {
                 "idPartie" : idPartie,
                 "pseudo" : pseudo,
-                "nbJoueurs" : nbJoueurs
+                "nbJoueurs" : nbJoueurs,
+                "position" : posJoueurGagnant
             };
             emitToPartie("gagnePoint",objRetour,idPartie);
             return;
         }
-
-
 
         if(position === positionJoueur){
             console.log("Le joueur tire dans sa pile");
@@ -537,8 +539,63 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
 
     });
 
+    socket.on("prepareNextTurn",function(obj){
+        console.log("---------- prepareNextTurn");
+        console.log(obj);
+        let position=null;
+        partieEnCours.forEach(function(partie){
+            if(partie.getIdPartie()===obj.idPartie){
+                if(obj.joueurGagnantManche!==null){
+                    let joueurGagnantLaManche=  partie.getJoueurByName(obj.joueurGagnantManche);
+                    if(joueurGagnantLaManche.getNbPoints()===2){
+                        let objAEmit= {
+                          "idPartie":obj.idPartie,
+                          "gagnant":obj.joueurGagnantManche
+                        };
+                        emitToPartie("gagneLaPartie",objAEmit,obj.idPartie);
+                        return;
+                    }
+                    position=joueurGagnantLaManche.getPositionOnBoard();
+                }
+                let setUpMancheSuivante = partie.setMancheSuivante();
+                console.log(setUpMancheSuivante);
+                let toSend = {
+                    "idPartie" : obj.idPartie,
+                    "pseudo" : obj.joueurGagnantEnchere,
+                    "position": position,
+                    "nbDeJetonsRestantParJoueur":partie.getNbDeJetonsParJoueur()
+                };
+                if(!setUpMancheSuivante.dejaSet){ // si le joueur ayant retourner le crane est eliminé
+                    toSend.pseudo=setUpMancheSuivante.celuiQuiChoisit;
+                    toSend.position=getPositionJoueur(obj.idPartie,setUpMancheSuivante.celuiQuiChoisit);
+                    emitToPartie("choixPremierJoueur",toSend,obj.idPartie);
+                    return;
+                }
+                emitToPartie("finPrepareTurn",toSend,obj.idPartie);
+            }
+        });
+    });
+
+    socket.on("returnChoixPremierJoueur",function(obj){
+        console.log("---------- returnChoixPremierJoueur");
+        let pseudo=getJoueurbyPosition(obj.idPartie,obj.position).getPseudoUtilisateur();
+        let nbJetonsParJoueur=null;
+        partieEnCours.forEach(function(partie){
+            if(partie.getIdPartie()===obj.idPartie){
+                partie.setJoueurSuivant(pseudo);
+                nbJetonsParJoueur=partie.getNbDeJetonsParJoueur();
+            }
+        });
+        let toSend = {
+            "idPartie" : obj.idPartie,
+            "pseudo" : pseudo,
+            "position": obj.position,
+            "nbDeJetonsRestantParJoueur":nbJetonsParJoueur
+        };
+        emitToPartie("finPrepareTurn",toSend,obj.idPartie);
+    });
+
     function getPositionJoueur(idPartie,pseudo){
-        let retour;
         let j = getJoueurbyPseudo(idPartie,pseudo);
         return j.getPositionOnBoard();
     }
