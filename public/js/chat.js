@@ -577,11 +577,11 @@ document.addEventListener("DOMContentLoaded",function(e) {
                 return;
             }
 
-            if(Number(inputValue)===obj.nbJetonsJoues){
+            /*if(Number(inputValue)===obj.nbJetonsJoues){
                 console.log("enchere gagne -> a implem");
                 // emit something
                 return;
-            }
+            }*/
             let toSend = {
                 "idPartie": obj.idPartie,
                 "pseudo":pseudo,
@@ -681,8 +681,11 @@ document.addEventListener("DOMContentLoaded",function(e) {
         spanIndication.innerHTML = " a gagné l'enchère avec "+ obj.enchereLaPlusForte.valeurEnchere +" !";
 
         let statutEnchere = document.querySelector("body #parties #divPartie"+obj.idPartie+" .statutEnchere");
-        statutEnchere.innerHTML="";
-        statutEnchere.style.display="none";
+        if(statutEnchere !== null){
+            statutEnchere.innerHTML="";
+            statutEnchere.style.display="none";
+        }
+
     });
 
     function askingEncheres(idPartie,pseudo){
@@ -767,5 +770,42 @@ document.addEventListener("DOMContentLoaded",function(e) {
         socket.emit("getJetons",askFor);
         // envoyer requete au joueur suivant
     }
+
+    socket.on("phaseRetourneJetons",function(obj){
+        // mettre eventlistener sur la pile du joueur
+        let position = obj.position;
+        let idPartie = obj.idPartie;
+        let nbPose = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .englobeJ .nbJetons");
+        let jeton = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .englobeJ .jeton");
+
+        jeton.addEventListener('click',function(){
+            console.log("click sur jetons");
+            socket.emit("retourneJeton",obj);
+        });
+        // obliger à clicker sur sa pile jusqu'à qu'elle soit vide puis ajouter eventlistner sur les obj .jeton
+    });
+
+    socket.on("retourneJeton",function(obj){ // pour l'affichage à tt le monde
+        let position = obj.position;
+        let idPartie = obj.idPartie;
+        let nbPose = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .englobeJ .nbJetons");
+        let jeton = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .englobeJ .jeton");
+
+        if(nbPose.innerHTML !== "1"){
+            let int = Number(nbPose.innerHTML);
+            nbPose.innerHTML = int - 1;
+        }else{
+            nbPose.innerHTML = 0;
+            jeton.style.display= "none";
+        }
+        if(pseudo !== obj.pseudo){return;}
+        let objRetour = {
+            "idPartie" : idPartie,
+            "pseudo" : pseudo,
+            "position" : position,
+            "nbPose" : Number(nbPose.innerHTML)
+        };
+        socket.emit("jetonRetourne",obj);
+    });
 
 });

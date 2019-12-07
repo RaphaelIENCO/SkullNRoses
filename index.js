@@ -289,7 +289,7 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
         partieEnCours.forEach(function(partie){
             if(partie.getIdPartie()===idPartie){
                 if(partie.getNbDeJetonsPoses()===encherePropose){
-                    console.log("encherMax = TRUE");
+                    console.log("---encherMax = TRUE");
                     enchereMax=true;
                 }
                 partie.setEnchereLaPlusForte(pseudo,encherePropose);
@@ -310,6 +310,14 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
                 "joueurSuivant" : joueurSuivant
             };
             emitToPartie("gagneEnchere",objetAEmit,idPartie);
+
+            let position = getPositionJoueur(idPartie,pseudo);
+            let obj = {
+                "idPartie" : idPartie,
+                "pseudo" : pseudo,
+                "position" : position
+            };
+            clients[pseudo].emit("phaseRetourneJetons",obj);
             return;
         }
 
@@ -419,6 +427,40 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
 
         emitToPartie("returnSkipEnchere",objetAEmit,idPartie);
     });
+
+    socket.on("retourneJeton",function(obj){
+        emitToPartie("retourneJeton",obj,obj.idPartie);
+    });
+
+    socket.on("jetonRetourne",function(obj){
+        console.log("---------- jetonRetourne");
+        let position = obj.position;
+        let idPartie = obj.idPartie;
+        let pseudo = obj.pseudo;
+
+        let positionJoueur = getPositionJoueur(idPartie,pseudo);
+        //console.log(getPositionJoueur(idPartie,pseudo));
+        //console.log(position);
+        if(position === positionJoueur){
+            console.log("Le joueur tire dans sa pile");
+            // tester si il a tout tiré pour ajouter les events listner sur les piles de l'autre
+        }
+        // tester si il vient de tirer dans une autre pile
+
+        //verifie si retourne tete de mort (peut etre au début ?)
+
+    });
+
+    function getPositionJoueur(idPartie,pseudo){
+        let retour;
+        partieEnCours.forEach(function(partie){
+            if(partie.getIdPartie()===idPartie){
+                let j = partie.getJoueurByName(pseudo);
+                retour = j.getPositionOnBoard();
+            }
+        });
+        return retour;
+    }
 
     function emitToPartie(typeEmit,objetAEmit,idPartie){
         partieEnCours.forEach(function(partie){
