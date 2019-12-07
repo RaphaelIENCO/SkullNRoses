@@ -299,6 +299,7 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
                 joueurSuivant=partie.auJoueurSuivant();
             }
         });
+
         if(enchereMax){
             console.log("- enchere max "+pseudo+" doit retrourner les jetons");
             // socket.emit gagneEnchere
@@ -342,9 +343,17 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
 
         if(aPerdu || !actif){
             console.log(pseudo+" a perdu ou est déjà couché.");
-            // emit special pour passer direct au joueur suivant (sera la mm que si le joueur se couche)
+            // emit special pour passer direct au joueur suivant
+            let objetAEmit = {
+                "idPartie" : idPartie,
+                "pseudo" : pseudo,
+                "position" : position,
+                "nbJetonsJoues" : nbJetonsJoues,
+                "enchereLaPlusForte" : enchereLaPlusForte
+            };
+            clients[pseudo].emit("returnEncherePerduOuCouche",objetAEmit);
+            return;
         }
-
 
         let objetAEmit = {
             "idPartie" : idPartie,
@@ -384,6 +393,31 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
         };
 
         emitToPartie("seCouche",objetAEmit,idPartie);
+    });
+
+    socket.on("skipJoueurEnchere", function(obj) {
+        let idPartie = obj.idPartie;let pseudo = obj.pseudo;
+
+        let nbJetonsJoues=null;
+        let enchereLaPlusForte=null;
+        let joueurSuivant=null;
+        partieEnCours.forEach(function(partie) {
+            if (partie.getIdPartie() === idPartie) {
+                nbJetonsJoues=partie.getNbDeJetonsPoses();
+                enchereLaPlusForte=partie.getEnchereLaPlusForte();
+                joueurSuivant=partie.auJoueurSuivant();
+            }
+        });
+
+        let objetAEmit = {
+            "idPartie" : idPartie,
+            "pseudo" : pseudo,
+            "nbJetonsJoues" : nbJetonsJoues,
+            "enchereLaPlusForte" : enchereLaPlusForte,
+            "joueurSuivant" : joueurSuivant
+        };
+
+        emitToPartie("returnSkipEnchere",objetAEmit,idPartie);
     });
 
     function emitToPartie(typeEmit,objetAEmit,idPartie){

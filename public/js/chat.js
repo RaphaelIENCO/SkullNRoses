@@ -701,6 +701,26 @@ document.addEventListener("DOMContentLoaded",function(e) {
         setUpSeCoucher(obj);
     });
 
+    socket.on("returnEncherePerduOuCouche",function(obj){
+        console.log("returnEncherePerduOuCouche");
+        let objAEmit={
+            "idPartie" :obj.idPartie,
+            "pseudo" : pseudo
+        };
+        socket.emit("skipJoueurEnchere",objAEmit);
+    });
+
+    socket.on("returnSkipEnchere",function(obj){
+        console.log("returnSkipEnchere");
+        if(obj.pseudo!==pseudo){return;}
+        for(let i=0;i<listeJoueursParPartie.length;i++){
+            if(listeJoueursParPartie[i][0]===obj.idPartie){
+                askingEncheres(obj.idPartie,listeJoueursParPartie[i][1][obj.joueurSuivant].pseudoUtilisateur);
+            }
+        }
+    });
+
+
     socket.on("poserJeton",function(obj){
         let joueurQuiAPose=obj.pseudo;let idPartie=obj.idPartie;let jSuivant=obj.joueurSuivant;
         let position=obj.position;let nbJetonsRestant=obj.nbJetonsRestant;

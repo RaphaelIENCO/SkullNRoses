@@ -103,9 +103,15 @@ class Partie {
         return this.nbJoueurs;
     }
 
-    /*getListeUtilisateurs(){
-        return this.listeUtilisateurs;
-    }*/
+    getNbJoueursEnListe(){
+        let nbJoueurs=0;
+        for(let i=0;i<this.listeJoueurs.length;i++){
+            if(this.listeJoueurs[i].getActif() && !this.listeJoueurs[i].isPerdant()){
+                nbJoueurs++;
+            }
+        }
+        return nbJoueurs;
+    }
 
     getListeJoueurs(){
         return this.listeJoueurs;
