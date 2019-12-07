@@ -314,7 +314,8 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
             let obj = {
                 "idPartie" : idPartie,
                 "pseudo" : pseudo,
-                "position" : position
+                "position" : position,
+                "nbParis" : enchereLaPlusForte.valeurEnchere
             };
             clients[pseudo].emit("phaseRetourneJetonsPerso",obj);
             return;
@@ -453,7 +454,8 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
         let toSend = {
             "idPartie" : obj.idPartie,
             "pseudo" : pseudo,
-            "position" : position
+            "position" : position,
+            "nbParis" : enchereLaPlusForte.valeurEnchere
         };
         clients[pseudo].emit("phaseRetourneJetonsPerso",toSend);
     });
@@ -467,6 +469,7 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
         let position = obj.position;
         let idPartie = obj.idPartie;
         let pseudo = obj.pseudo;
+        let nbParis = obj.nbParis;
 
         let positionJoueur = getPositionJoueur(idPartie,pseudo);
         let j = getJoueurbyPosition(idPartie,position);
@@ -480,11 +483,32 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
             return;
         }
 
+        console.log(nbParis);
+        nbParis--;
+        console.log(nbParis);
+        if (nbParis<=0){
+            console.log("Fin du retournage");
+            let nbJoueurs;
+            partieEnCours.forEach(function(partie){
+                if (partie.getIdPartie() === obj.idPartie) {
+                    nbJoueurs = partie.getNbJoueurs();
+                }
+            });
+            let objRetour = {
+                "idPartie" : idPartie,
+                "pseudo" : pseudo,
+                "nbJoueurs" : nbJoueurs
+            };
+            emitToPartie("gagnePoint",objRetour,idPartie);
+            return;
+        }
+
+
+
         if(position === positionJoueur){
             console.log("Le joueur tire dans sa pile");
             if(jetonsPoses.length === 0){
                 console.log("---Pile vide ----");
-                //emit a l'acteur pour ajouter les eventlistner sur les piles des auttres
                 let positions = [];
 
                 partieEnCours.forEach(function(partie){
@@ -500,15 +524,16 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
                 let objAEmit = {
                     "idPartie" : idPartie,
                     "pseudo" : pseudo,
-                    "position" : positions
+                    "position" : positions,
+                    "nbParis" : nbParis
                 };
 
                 clients[pseudo].emit("phaseRetourneJetonsAutres",objAEmit);
             }
+        }else {
+            console.log("Le joueur tire dans une autre pile");
         }
         // tester si il vient de tirer dans une autre pile
-
-        //verifie si retourne tete de mort (peut etre au début ?)
 
     });
 

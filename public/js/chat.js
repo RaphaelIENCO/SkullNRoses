@@ -794,30 +794,46 @@ document.addEventListener("DOMContentLoaded",function(e) {
         let idPartie = obj.idPartie;
         let nbPose = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .englobeJ .nbJetons");
         let jeton = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .englobeJ .jeton");
+        let divComptParis = document.createElement("div");
+        divComptParis.id = "comptParis";
+        divComptParis.style.display = "none";
+        divComptParis.innerHTML = obj.nbParis;
+
+        let parent = document.querySelector("body #parties #divPartie"+idPartie);
+        parent.appendChild(divComptParis);
 
         jeton.addEventListener('click',function(){
+            let comptParis = document.querySelector("body #parties #divPartie"+idPartie+" #comptParis");
             console.log("click sur jetons");
-            socket.emit("retourneJeton",obj);
+            let objAEmit = {
+                "idPartie" : idPartie,
+                "pseudo" : pseudo,
+                "position" :position,
+                "nbParis" : Number(comptParis.innerHTML)
+            };
+            socket.emit("retourneJeton",objAEmit);
         });
-        // obliger à clicker sur sa pile jusqu'à qu'elle soit vide puis ajouter eventlistner sur les obj .jeton
     });
 
-    socket.on("phaseRetourneJetonsAutres",function(obj){
+    socket.on("phaseRetourneJetonsAutres",function(obj){ // seulement pour le joueur qui retourne
         console.log(obj);
         let idPartie = obj.idPartie;
         let pseudo = obj.pseudo;
         let positions = obj.position;
+
 
         positions.forEach(function(position){
             let nbPose = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .englobeJ .nbJetons");
             let jeton = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .englobeJ .jeton");
 
             jeton.addEventListener('click',function(){
+                let comptParis = document.querySelector("body #parties #divPartie"+idPartie+" #comptParis");
                 console.log("click sur jetons");
                 let objAEmit = {
                     "idPartie" : idPartie,
                     "pseudo" : pseudo,
-                    "position" :position
+                    "position" :position,
+                    "nbParis" : Number(comptParis.innerHTML)
                 };
                 socket.emit("retourneJeton",objAEmit);
             });
@@ -829,6 +845,12 @@ document.addEventListener("DOMContentLoaded",function(e) {
         let idPartie = obj.idPartie;
         let nbPose = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .englobeJ .nbJetons");
         let jeton = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .englobeJ .jeton");
+        let comptParis = document.querySelector("body #parties #divPartie"+idPartie +" #comptParis");
+
+        if(comptParis != null){
+            let int = Number(comptParis.innerHTML);
+            comptParis.innerHTML = int - 1;
+        }
 
         if(nbPose.innerHTML !== "1"){
             let int = Number(nbPose.innerHTML);
@@ -843,7 +865,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
             "idPartie" : idPartie,
             "pseudo" : pseudo,
             "position" : position,
-            "nbPose" : Number(nbPose.innerHTML)
+            "nbParis" : obj.nbParis,
         };
         socket.emit("jetonRetourne",obj);
     });
@@ -859,6 +881,25 @@ document.addEventListener("DOMContentLoaded",function(e) {
         spanJoueurCourant.innerHTML = pseudo;
         spanIndication.innerHTML = " a retourné un crane !";
 
+
+    });
+
+    socket.on("gagnePoint",function(obj){
+        console.log(obj);
+        let idPartie = obj.idPartie;
+        let spanJoueurCourant = document.querySelector("body #parties #divPartie"+idPartie+" .joueurCourant");
+        let spanIndication = document.querySelector("body #parties #divPartie"+idPartie+" .indication");
+        spanJoueurCourant.innerHTML = obj.pseudo;
+        spanIndication.innerHTML = " a gagné un point !";
+
+        let comptParis = document.getElementById("comptParis");
+        if(comptParis !== null){
+            comptParis.remove();
+        }
+        for (let i = 1; i <= obj.nbJoueurs; i++) {
+            let parent = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+i+") aside .englobeJ");
+            parent.innerHTML = "";
+        }
 
     });
 
