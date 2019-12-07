@@ -835,7 +835,8 @@ document.addEventListener("DOMContentLoaded",function(e) {
             nbPose.innerHTML = int - 1;
         }else{
             nbPose.innerHTML = 0;
-            jeton.style.display= "none";
+            let parent = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .englobeJ");
+            parent.removeChild(jeton);
         }
         if(pseudo !== obj.pseudo){return;}
         let objRetour = {
