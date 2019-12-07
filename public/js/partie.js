@@ -20,6 +20,8 @@ class Partie {
             "valeurEnchere" : 0
         };
 
+        this.proprietaireDuCrane=null;
+
         this.ordreClans = ["cyborgs","jokers","amazons","indians","carnivorous","swallows"];
     }
 
@@ -34,6 +36,61 @@ class Partie {
             }
         }
         return false;
+    }
+
+    setMancheSuivante(){
+        let jGagnantEnchere = null;
+        for(let i=0;i<this.listeJoueurs.length;i++){
+            if(this.listeJoueurs[i].getPseudoUtilisateur()===this.getEnchereLaPlusForte().pseudoJoueur){
+                jGagnantEnchere = this.listeJoueurs[i];
+            }
+            this.listeJoueurs[i].reprendreJetons();
+            this.listeJoueurs[i].seReleve();
+        }
+
+        let toSend = {
+            "dejaSet":true,
+            "celuiQuiChoisit":null
+        };
+        if(!jGagnantEnchere.isPerdant()){ // s'il n'a pas perdu il commence
+            this.setJoueurSuivant(jGagnantEnchere.getPseudoUtilisateur());
+        }else{ // s'il a perdu le proprietaire du crane designe qq un
+            console.log(jGagnantEnchere.getPseudoUtilisateur()+" a perdu la manche donc le proprietaire du crane " +
+                this.getProprietaireDuCrane()+" doit designer qui joue en premier");
+
+            toSend.dejaSet=false;
+            toSend.celuiQuiChoisit=this.getProprietaireDuCrane();
+        }
+        return toSend;
+    }
+
+    setProprietaireDuCrane(pseudoOrNull){
+        this.proprietaireDuCrane=pseudoOrNull;
+    }
+
+    getProprietaireDuCrane(){
+        return this.proprietaireDuCrane;
+    }
+
+    setJoueurSuivant(pseudo){
+        for(let i=0;i<this.listeJoueurs.length;i++){
+            if(this.listeJoueurs[i].getPseudoUtilisateur()===pseudo){
+                this.auTourDuJoueur=i;
+            }
+        }
+    }
+
+    isDernierSurvivant(pseudo){
+        for(let i=0;i<this.listeJoueurs.length;i++){
+            if(this.listeJoueurs[i].getPseudoUtilisateur()===pseudo){
+                if(this.listeJoueurs[i].isPerdant()){return false;}
+                continue;
+            }
+            if(!this.listeJoueurs[i].isPerdant()){
+                return false;
+            }
+        }
+        return true;
     }
 
     getEnchereLaPlusForte(){
