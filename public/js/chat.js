@@ -603,11 +603,8 @@ document.addEventListener("DOMContentLoaded",function(e) {
                 spanJoueurCourant.innerHTML = listeJoueursParPartie[i][1][jSuivant].pseudoUtilisateur;
             }
         }
-        spanIndication.innerHTML = " choisissez un disque à empiler";
-        if (('speechSynthesis' in window)){
-            let enonciation = new SpeechSynthesisUtterance(spanJoueurCourant.innerHTML+" "+spanIndication.innerHTML);
-            window.speechSynthesis.speak(enonciation);
-        }
+        let indication=" choisissez un disque à empiler";
+        updateIndication(obj.idPartie,indication,spanJoueurCourant.innerHTML,true);
 
         // au joueur suivant
         if(joueurQuiAPose!==pseudo){return;} // permet de faire le prochain emit qu'une fois
@@ -673,17 +670,13 @@ document.addEventListener("DOMContentLoaded",function(e) {
         divEnchere.innerHTML=obj.pseudo+" detient la plus haute enchère qui est de "+obj.enchereLaPlusForte.valeurEnchere+" jetons.";
 
         let spanJoueurCourant = document.querySelector("body #parties #divPartie"+idPartie+" .joueurCourant");
-        let spanIndication = document.querySelector("body #parties #divPartie"+idPartie+" .indication");
         for(let i=0;i<listeJoueursParPartie.length;i++){
             if(listeJoueursParPartie[i][0]===idPartie){
                 spanJoueurCourant.innerHTML = listeJoueursParPartie[i][1][jSuivant].pseudoUtilisateur;
             }
         }
-        spanIndication.innerHTML = " faites votre enchère !";
-        if (('speechSynthesis' in window)){
-            let enonciation = new SpeechSynthesisUtterance(spanJoueurCourant.innerHTML+" "+spanIndication.innerHTML);
-            window.speechSynthesis.speak(enonciation);
-        }
+        let indication=" faites votre enchère !";
+        updateIndication(obj.idPartie,indication,spanJoueurCourant.innerHTML,true);
 
         // au joueur suivant
         if(obj.pseudo!==pseudo){return;} // permet de faire le prochain emit qu'une fois
@@ -695,16 +688,8 @@ document.addEventListener("DOMContentLoaded",function(e) {
     });
 
     socket.on("gagneEnchere",function(obj){
-        let spanJoueurCourant = document.querySelector("body #parties #divPartie"+obj.idPartie+" .joueurCourant");
-        let spanIndication = document.querySelector("body #parties #divPartie"+obj.idPartie+" .indication");
-        //console.log(obj.enchereLaPlusForte);
-        spanJoueurCourant.innerHTML = obj.pseudo;
-        spanIndication.innerHTML = " a gagné l'enchère avec "+ obj.enchereLaPlusForte.valeurEnchere +" !";
-
-        if (('speechSynthesis' in window)){
-            let enonciation = new SpeechSynthesisUtterance(spanJoueurCourant.innerHTML+" "+spanIndication.innerHTML);
-            window.speechSynthesis.speak(enonciation);
-        }
+        let indication=" a gagné l'enchère avec "+ obj.enchereLaPlusForte.valeurEnchere +" !";
+        updateIndication(obj.idPartie,indication,obj.pseudo,true);
 
         let statutEnchere = document.querySelector("body #parties #divPartie"+obj.idPartie+" .enchereStatut");
         if(statutEnchere !== null){
@@ -793,11 +778,10 @@ document.addEventListener("DOMContentLoaded",function(e) {
                 let spanJoueurCourant = document.querySelector("body #parties #divPartie"+obj.idPartie+" .joueurCourant");
                 let spanIndication = document.querySelector("body #parties #divPartie"+obj.idPartie+" .indication");
                 spanJoueurCourant.innerHTML = listeJoueursParPartie[i][1][obj.joueurSuivant].pseudoUtilisateur;
-                spanIndication.innerHTML = " faites votre enchère";
-                if (('speechSynthesis' in window)){
-                    let enonciation = new SpeechSynthesisUtterance(spanJoueurCourant.innerHTML+" "+spanIndication.innerHTML);
-                    window.speechSynthesis.speak(enonciation);
-                }
+
+                let indication=" faites votre enchère !";
+                updateIndication(obj.idPartie,indication,spanJoueurCourant.innerHTML,true);
+
                 if(obj.pseudo!==pseudo){return;}
                 askingEncheres(obj.idPartie,listeJoueursParPartie[i][1][obj.joueurSuivant].pseudoUtilisateur);
             }
@@ -939,14 +923,8 @@ document.addEventListener("DOMContentLoaded",function(e) {
 
     function vider(obj, indication){
         let idPartie = obj.idPartie;
-        let spanJoueurCourant = document.querySelector("body #parties #divPartie"+idPartie+" .joueurCourant");
-        let spanIndication = document.querySelector("body #parties #divPartie"+idPartie+" .indication");
-        spanJoueurCourant.innerHTML = obj.pseudo;
-        spanIndication.innerHTML = indication;
-        if (('speechSynthesis' in window)){
-            let enonciation = new SpeechSynthesisUtterance(spanJoueurCourant.innerHTML+" "+spanIndication.innerHTML);
-            window.speechSynthesis.speak(enonciation);
-        }
+
+        updateIndication(obj.idPartie,indication,obj.pseudo,true);
 
         let comptParis = document.querySelector("body #parties #divPartie"+idPartie +" .comptParis");
         if(comptParis !== null){
@@ -963,14 +941,9 @@ document.addEventListener("DOMContentLoaded",function(e) {
     socket.on("choixPremierJoueur",function(obj){
         console.log("choixPremierJoueur");
         console.log(obj);
-        let spanJoueurCourant = document.querySelector("body #parties #divPartie"+obj.idPartie+" .joueurCourant");
-        let spanIndication = document.querySelector("body #parties #divPartie"+obj.idPartie+" .indication");
-        spanJoueurCourant.innerHTML=obj.pseudo;
-        spanIndication.innerHTML=" choisissez qui commencera lors du prochain tour.";
-        if (('speechSynthesis' in window)){
-            let enonciation = new SpeechSynthesisUtterance(spanJoueurCourant.innerHTML+" "+spanIndication.innerHTML);
-            window.speechSynthesis.speak(enonciation);
-        }
+
+        let indication=" choisissez qui commencera lors du prochain tour.";
+        updateIndication(obj.idPartie,indication,obj.pseudo,true);
 
         if(pseudo!==obj.pseudo){return;}
         // ajouter listner a tout les footer de joueur
@@ -1002,15 +975,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
             divjoueur.className += " dead";
         }
 
-        let spanJoueurCourant = document.querySelector("body #parties #divPartie"+obj.idPartie+" .joueurCourant");
-        let spanIndication = document.querySelector("body #parties #divPartie"+obj.idPartie+" .indication");
-
-        spanJoueurCourant.innerHTML = obj.pseudo;
-        spanIndication.innerHTML = " choisissez un disque à empiler";
-        if (('speechSynthesis' in window)){
-            let enonciation = new SpeechSynthesisUtterance(spanJoueurCourant.innerHTML+" "+spanIndication.innerHTML);
-            window.speechSynthesis.speak(enonciation);
-        }
+        updateIndication(obj.idPartie," choisissez un disque à empiler",obj.pseudo,true);
 
         // on met a jour les nb de jetons
         let nbJetonsRestant;
@@ -1038,24 +1003,16 @@ document.addEventListener("DOMContentLoaded",function(e) {
         console.log("gagneLaPartie");
         console.log(obj);
 
-        let spanJoueurCourant = document.querySelector("body #parties #divPartie"+obj.idPartie+" .joueurCourant");
-        let spanIndication = document.querySelector("body #parties #divPartie"+obj.idPartie+" .indication");
-
-        spanJoueurCourant.innerHTML = obj.gagnant;
-        spanIndication.innerHTML = " gagne la partie !";
-        if (('speechSynthesis' in window)){
-            let enonciation = new SpeechSynthesisUtterance(spanJoueurCourant.innerHTML+" "+spanIndication.innerHTML);
-            window.speechSynthesis.speak(enonciation);
-        }
+        updateIndication(obj.idPartie," gagne la partie !",obj.gagnant,true);
 
     });
 
-    function updateIndication(idPartie,indication,pseudo){
+    function updateIndication(idPartie,indication,pseudo,vocalOrNot){
         let spanJoueurCourant = document.querySelector("body #parties #divPartie"+idPartie+" .joueurCourant");
         let spanIndication = document.querySelector("body #parties #divPartie"+idPartie+" .indication");
         spanJoueurCourant.innerHTML = pseudo;
         spanIndication.innerHTML = indication;
-        if (('speechSynthesis' in window)){
+        if (('speechSynthesis' in window) && vocalOrNot){
             let enonciation = new SpeechSynthesisUtterance(spanJoueurCourant.innerHTML+" "+spanIndication.innerHTML);
             window.speechSynthesis.speak(enonciation);
         }
