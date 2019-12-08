@@ -974,7 +974,8 @@ document.addEventListener("DOMContentLoaded",function(e) {
                     joueurFooter.addEventListener("click",function(){
                         let toSend = {
                             "idPartie":obj.idPartie,
-                            "position":j
+                            "position":j,
+                            "positionPerdant" : obj.position
                         };
                         socket.emit("returnChoixPremierJoueur",toSend);
                     }, {once:true});
@@ -987,6 +988,11 @@ document.addEventListener("DOMContentLoaded",function(e) {
     socket.on("finPrepareTurn",function(obj){
         console.log("finPrepareTurn");
         console.log(obj);
+
+        if(obj.positionPerdant !== undefined){
+            let divjoueur = document.querySelector("body #parties #divPartie"+obj.idPartie+" .joueur:nth-of-type("+obj.positionPerdant+")");
+            divjoueur.className += " dead";
+        }
 
         updateIndication(obj.idPartie," choisissez un disque à empiler",obj.pseudo,true);
 

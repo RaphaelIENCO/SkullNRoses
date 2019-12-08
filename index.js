@@ -486,7 +486,7 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
             });
             let joueurPerdant = partieActuelle.getJoueurByName(pseudo);
             let jetonsDuPerdant = joueurPerdant.getJetons();
-            let loto = Math.floor(Math.random() * 4) + 1;
+            let loto = Math.floor(Math.random() * joueurPerdant.getJetons().length) + 1;
             let type = jetonsDuPerdant[loto-1];
             console.log("on retire un "+type);
             joueurPerdant.removeJeton(type);
@@ -624,7 +624,8 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
             "idPartie" : obj.idPartie,
             "pseudo" : pseudo,
             "position": obj.position,
-            "nbDeJetonsRestantParJoueur":nbJetonsParJoueur
+            "nbDeJetonsRestantParJoueur":nbJetonsParJoueur,
+            "positionPerdant" : obj.positionPerdant
         };
         emitToPartie("finPrepareTurn",toSend,obj.idPartie);
     });
