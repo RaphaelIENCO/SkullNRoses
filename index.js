@@ -133,6 +133,11 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
             delete clients[currentID];
 
             // test du delete
+            console.log(utilisateurs[currentID]);
+            let partieDuJoueurDecoTjrsEnCours = utilisateurs[currentID].getListeParties();
+            //une fois partie terminer il faut retirer la partie
+
+
             delete utilisateurs[currentID];
             // voir si il faut parcourir les parties de l'utilisateur a supprimer avant de le supprimer
             // surement a faire plus tard (pour l'ajout de l'IA remplaçante)
@@ -622,6 +627,21 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
             "nbDeJetonsRestantParJoueur":nbJetonsParJoueur
         };
         emitToPartie("finPrepareTurn",toSend,obj.idPartie);
+    });
+
+    socket.on("partieTermine",function(idPartie){
+
+        let nbr=0;
+        let index;
+        partieEnCours.forEach(function(partie){
+            if(partie.getIdPartie()===idPartie){
+                index=nbr;
+            }
+            nbr++;
+        });
+        console.log(partieEnCours);
+        partieEnCours.splice(index,1);
+        console.log(partieEnCours);
     });
 
     function getPositionJoueur(idPartie,pseudo){

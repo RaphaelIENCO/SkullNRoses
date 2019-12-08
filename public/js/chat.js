@@ -187,6 +187,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
         request.send();
     }
 
+    var partieToSuppr=[];
     function openChat(){
         divContent.style.display = 'block';
         divParties.style.display = 'none';
@@ -194,6 +195,24 @@ document.addEventListener("DOMContentLoaded",function(e) {
             element.className = "tablinks";
         });
         ongletChat.className += " active";
+
+        let indexASuppr=[];
+        for(let i=0;i<partieToSuppr.length;i++){
+            for(let j=0;j<listeJoueursParPartie.length;j++){
+                if(listeJoueursParPartie[j][0]===partieToSuppr[i]){
+                    indexASuppr.push(j);
+                }
+            }
+        }
+        console.log(listeJoueursParPartie);
+        for(let i=0;i<indexASuppr.length;i++){
+            listeJoueursParPartie.splice(indexASuppr[i],1);
+            let div=document.querySelector("body #parties #divPartie"+(indexASuppr[i]+1)+"");
+            divParties.removeChild(div);
+            let button=document.getElementById(""+(indexASuppr[i]+1)+"");
+            navbar.removeChild(button);
+        }
+        console.log(listeJoueursParPartie);
     }
 
 
@@ -998,7 +1017,8 @@ document.addEventListener("DOMContentLoaded",function(e) {
         console.log(obj);
 
         updateIndication(obj.idPartie," gagne la partie !",obj.gagnant,true);
-
+        socket.emit("partieTermine",obj.idPartie);
+        partieToSuppr.push(obj.idPartie);
     });
 
     function updateIndication(idPartie,indication,pseudo,vocalOrNot){
