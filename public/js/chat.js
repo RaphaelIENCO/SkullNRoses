@@ -971,7 +971,9 @@ document.addEventListener("DOMContentLoaded",function(e) {
             let parent = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+i+") aside");
             parent.innerHTML = "";
             let joueur = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+i+")");
-            joueur.className="joueur";
+            if(joueur.className.includes("cross")){
+                joueur.className="joueur";
+            }
         }
     }
 
