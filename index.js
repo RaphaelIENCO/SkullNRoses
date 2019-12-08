@@ -199,7 +199,6 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
         let listeUser= [];
         listeJoueur.forEach(function(joueur) {
             console.log(joueur);
-            utilisateurs[joueur].listeParties.push(partieEnCours.length+1);
             listeUser.push(utilisateurs[joueur]);
         });
 
@@ -631,18 +630,24 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
     });
 
     socket.on("partieTermine",function(idPartie){
-
+        console.log("--- partie terminé");
+        console.log(utilisateurs);
         let nbr=0;
         let index;
         partieEnCours.forEach(function(partie){
             if(partie.getIdPartie()===idPartie){
                 index=nbr;
+                partie.getListeJoueurs().forEach(function(joueur){
+                   utilisateurs[joueur.getPseudoUtilisateur()].removePartie(idPartie);
+                });
             }
             nbr++;
         });
+
         console.log(partieEnCours);
         partieEnCours.splice(index,1);
         console.log(partieEnCours);
+        console.log(utilisateurs);
     });
 
     function getPositionJoueur(idPartie,pseudo){

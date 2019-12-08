@@ -20,8 +20,10 @@ class Utilisateur {
     }
 
     removePartie(idPartie){
+        console.log("--- removePartie with idPartie:"+idPartie);
         for (let i=0;i<this.listeParties.length;i++){
             if(idPartie===this.listeParties[i]){
+                console.log("found on :"+i);
                 this.listeParties.splice(i,1);
                 return true;
             }

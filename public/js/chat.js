@@ -1023,8 +1023,10 @@ document.addEventListener("DOMContentLoaded",function(e) {
         console.log(obj);
 
         updateIndication(obj.idPartie," gagne la partie !",obj.gagnant,true);
-        socket.emit("partieTermine",obj.idPartie);
+
         partieToSuppr.push(obj.idPartie);
+        if(pseudo!==obj.gagnant){return;}
+        socket.emit("partieTermine",obj.idPartie);
     });
 
     function updateIndication(idPartie,indication,pseudo,vocalOrNot){
