@@ -355,6 +355,10 @@ document.addEventListener("DOMContentLoaded",function(e) {
         }
     });
 
+    socket.on("annulerPartie", function(obj){
+        fermerInvite();
+    });
+
     function lancerPartie(){
         let listeJoueurs = [];
         listeRejointAccepter.childNodes.forEach(function (div) {
@@ -371,7 +375,11 @@ document.addEventListener("DOMContentLoaded",function(e) {
 
         console.log("envoyer au serveur les id des joueurs ayant accepté suivant : ");
         console.log(listeJoueurs);
-        socket.emit("lancerPartie",listeJoueurs);
+        let obj = {
+            "pseudoHote":pseudo,
+            "listeJoueurs":listeJoueurs
+        };
+        socket.emit("lancerPartie",obj);
 
         listeJoueursInvites=[];
         listeConnecteInvite.innerHTML = "<h4>Joueurs connectés</h4>";

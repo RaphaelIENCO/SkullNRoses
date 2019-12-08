@@ -198,19 +198,28 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
                "result": false
            };
            console.log("-> annuler serveur pour joueur:"+resultInvit.to);
-           clients[joueur].emit("resultInvitation",resultInvit);
+           if(clients[joueur]){
+               clients[joueur].emit("resultInvitation",resultInvit);
+           }
        });
     });
 
     /*** Gestion des parties en cours ***/
 
-    socket.on("lancerPartie",function(listeJoueur){
+    socket.on("lancerPartie",function(obj){
         let listeUser= [];
-        listeJoueur.forEach(function(joueur) {
+        obj.listeJoueurs.forEach(function(joueur) {
             console.log(joueur);
-            listeUser.push(utilisateurs[joueur]);
+            if(utilisateurs[joueur]){
+                listeUser.push(utilisateurs[joueur]);
+            }
         });
 
+        if(listeUser.length<3){
+            let objAEmit = {};
+            clients[obj.pseudoHote].emit("annulerPartie",objAEmit);
+            return;
+        }
         let partie = new Partie(partieEnCours.length+1,listeUser);
         console.log("partie crée : ");
         console.log(partie);
@@ -218,15 +227,15 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
         partieEnCours.push(partie);
 
         // emit qq chose pour prevenir les joueurs
-        listeJoueur.forEach(function(joueur){
+        obj.listeJoueurs.forEach(function(joueur){
             utilisateurs[joueur].addIdPartie(partie.getIdPartie());
-            let obj = {
+            let objAEmit = {
                 "id" : partie.id,
                 "nbJoueurs" : partie.nbJoueurs,
                 "listeJoueur" : partie.listeJoueurs,
                 "aQuiLeTour" : partie.aQuiLeTour()
             };
-            clients[joueur].emit("debutPartie",obj);
+            clients[joueur].emit("debutPartie",objAEmit);
         });
     });
 
