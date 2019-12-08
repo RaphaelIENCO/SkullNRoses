@@ -569,7 +569,7 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
                 partieEnCours.forEach(function(partie){
                     if(partie.getIdPartie()===idPartie){
                         partie.getListeJoueurs().forEach(function(joueur){
-                            if(position !== joueur.getPositionOnBoard()){
+                            if(position !== joueur.getPositionOnBoard() && !joueur.isPerdant()){
                                 positions.push(joueur.getPositionOnBoard());
                             }
                         });

@@ -1010,6 +1010,8 @@ document.addEventListener("DOMContentLoaded",function(e) {
         if(obj.positionPerdant !== undefined){
             let divjoueur = document.querySelector("body #parties #divPartie"+obj.idPartie+" .joueur:nth-of-type("+obj.positionPerdant+")");
             divjoueur.className += " dead";
+            let spanNbJetons = document.querySelector("body #parties #divPartie"+obj.idPartie+" .joueur:nth-of-type("+obj.positionPerdant+") footer .englobeJ .nbJetons");
+            spanNbJetons.remove();
         }
 
         updateIndication(obj.idPartie," choisissez un disque à empiler",obj.pseudo,true);
@@ -1020,7 +1022,9 @@ document.addEventListener("DOMContentLoaded",function(e) {
             if(listeJoueursParPartie[i][0]===obj.idPartie){
                 for (let j=1;j<=listeJoueursParPartie[i][1].length;j++) {
                     nbJetonsRestant = document.querySelector("body #parties #divPartie" + obj.idPartie + " .joueur:nth-of-type(" + j + ") footer .englobeJ .nbJetons");
-                    nbJetonsRestant.innerHTML=obj.nbDeJetonsRestantParJoueur[j-1];
+                    if(nbJetonsRestant !== null){
+                        nbJetonsRestant.innerHTML=obj.nbDeJetonsRestantParJoueur[j-1];
+                    }
                 }
             }
         }
