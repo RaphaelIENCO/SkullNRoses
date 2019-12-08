@@ -133,10 +133,19 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
             delete clients[currentID];
 
             // test du delete
+
+            console.log(" --- deco on regarde les parties du joueur avant de le suppr");
             console.log(utilisateurs[currentID]);
             let partieDuJoueurDecoTjrsEnCours = utilisateurs[currentID].getListeParties();
-            //une fois partie terminer il faut retirer la partie
-
+            for(let i=0;i<partieEnCours.length;i++){
+                for(let j=0;j<partieDuJoueurDecoTjrsEnCours.length;j++){
+                    if(partieEnCours[i].getIdPartie()===partieDuJoueurDecoTjrsEnCours[j]){
+                        partieEnCours[i].getJoueurByName(currentID).setConnect(false);
+                        // emit a tout les joueurs ??
+                        console.log(partieEnCours[i].getListeJoueurs());
+                    }
+                }
+            }
 
             delete utilisateurs[currentID];
             // voir si il faut parcourir les parties de l'utilisateur a supprimer avant de le supprimer

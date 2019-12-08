@@ -17,6 +17,8 @@ class Joueur{
         this.positionOnBord=numClan+1;
         this.nbPoints=0;
 
+        this.connect=true;
+
         this.jetons=["roses","roses","roses","skull"];
         this.jetonsPoses=[];
     }
@@ -81,5 +83,8 @@ class Joueur{
     getClan(){return this.clan;}
     getNbPoints(){return this.nbPoints;}
     gagneUnPoint(){this.nbPoints++;return this.nbPoints;}
+
+    getConnect(){return this.connect;}
+    setConnect(trueOrNot){this.connect=trueOrNot;}
 }
 module.exports = Joueur;
