@@ -963,7 +963,6 @@ document.addEventListener("DOMContentLoaded",function(e) {
     socket.on("choixPremierJoueur",function(obj){
         console.log("choixPremierJoueur");
         console.log(obj);
-
         let spanJoueurCourant = document.querySelector("body #parties #divPartie"+obj.idPartie+" .joueurCourant");
         let spanIndication = document.querySelector("body #parties #divPartie"+obj.idPartie+" .indication");
         spanJoueurCourant.innerHTML=obj.pseudo;
@@ -983,7 +982,8 @@ document.addEventListener("DOMContentLoaded",function(e) {
                     joueurFooter.addEventListener("click",function(){
                         let toSend = {
                             "idPartie":obj.idPartie,
-                            "position":j
+                            "position":j,
+                            "positionPerdant" : obj.position
                         };
                         socket.emit("returnChoixPremierJoueur",toSend);
                     }, {once:true});
@@ -996,6 +996,11 @@ document.addEventListener("DOMContentLoaded",function(e) {
     socket.on("finPrepareTurn",function(obj){
         console.log("finPrepareTurn");
         console.log(obj);
+
+        if(obj.positionPerdant !== undefined){
+            let divjoueur = document.querySelector("body #parties #divPartie"+obj.idPartie+" .joueur:nth-of-type("+obj.positionPerdant+")");
+            divjoueur.className += " dead";
+        }
 
         let spanJoueurCourant = document.querySelector("body #parties #divPartie"+obj.idPartie+" .joueurCourant");
         let spanIndication = document.querySelector("body #parties #divPartie"+obj.idPartie+" .indication");
