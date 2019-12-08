@@ -471,14 +471,40 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
         let jetonsPoses = j.getJetonsPoses();
 
         if(jeton === "skull"){
+            let partieActuelle;
             partieEnCours.forEach(function(partie) {
                 if (partie.getIdPartie() === obj.idPartie) {
                     partie.setProprietaireDuCrane(pseudo);
+                    partieActuelle = partie;
                     console.log("proprietaire du crane : "+pseudo);
                 }
             });
+            let joueurPerdant = partieActuelle.getJoueurByName(pseudo);
+            let jetonsDuPerdant = joueurPerdant.getJetons();
+            let loto = Math.floor(Math.random() * 4) + 1;
+            let type = jetonsDuPerdant[loto-1];
+            console.log("on retire un "+type);
+            joueurPerdant.removeJeton(type);
+            console.log(joueurPerdant.getJetons());
+
+            if(joueurPerdant.getJetons().length===0){
+                joueurPerdant.aPerdu();
+            }
+
+            let nbJoueurs;
+            partieEnCours.forEach(function(partie){
+                if (partie.getIdPartie() === obj.idPartie) {
+                    nbJoueurs = partie.getNbJoueurs();
+                }
+            });
+
+            let objRetour = {
+                "idPartie" : idPartie,
+                "pseudo" : pseudo,
+                "nbJoueurs" : nbJoueurs
+            };
             emitToPartie("retourneCrane",obj,idPartie);  // emit a tt le monde qu'il a retourné un crane
-            //puis emit a celui qui possedait le crane
+            //clients[pseudo].emit("")
             return;
         }
 

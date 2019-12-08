@@ -907,7 +907,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
 
     socket.on("retourneCrane",function(obj){
         console.log(obj);
-
+        let idPartie = obj.idPartie;
         vider(obj,"a retourné un crane !");
 
         if(pseudo!==obj.pseudo){return;}
@@ -917,6 +917,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
             "joueurGagnantManche":null
         };
         socket.emit("prepareNextTurn",objAEmit);
+
     });
 
     socket.on("gagnePoint",function(obj){
