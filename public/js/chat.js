@@ -902,12 +902,13 @@ document.addEventListener("DOMContentLoaded",function(e) {
             "position" : position,
             "nbParis" : obj.nbParis,
         };
-        socket.emit("jetonRetourne",obj);
+        socket.emit("jetonRetourne",objRetour);
     });
 
     socket.on("retourneCrane",function(obj){
         console.log(obj);
-        let idPartie = obj.idPartie;
+        /*let nbPose = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .englobeJ .nbJetons");
+        let jeton = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+position+") aside .englobeJ .jeton");*/
         vider(obj,"a retourné un crane !");
 
         if(pseudo!==obj.pseudo){return;}
@@ -1011,7 +1012,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
         for(let i=0;i<listeJoueursParPartie.length;i++){
             if(listeJoueursParPartie[i][0]===obj.idPartie){
                 for (let j=1;j<=listeJoueursParPartie[i][1].length;j++) {
-                    nbJetonsRestant = document.querySelector("body #parties #divPartie" + obj.idPartie + " .joueur:nth-of-type(" + j + ") .englobeJ .nbJetons");
+                    nbJetonsRestant = document.querySelector("body #parties #divPartie" + obj.idPartie + " .joueur:nth-of-type(" + j + ") footer .englobeJ .nbJetons");
                     nbJetonsRestant.innerHTML=obj.nbDeJetonsRestantParJoueur[j-1];
                 }
             }

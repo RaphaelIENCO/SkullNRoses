@@ -501,9 +501,10 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
             let objRetour = {
                 "idPartie" : idPartie,
                 "pseudo" : pseudo,
-                "nbJoueurs" : nbJoueurs
+                "nbJoueurs" : nbJoueurs,
+                "position" : obj.position
             };
-            emitToPartie("retourneCrane",obj,idPartie);  // emit a tt le monde qu'il a retourné un crane
+            emitToPartie("retourneCrane",objRetour,idPartie);  // emit a tt le monde qu'il a retourné un crane
             //clients[pseudo].emit("")
             return;
         }
