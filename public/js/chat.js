@@ -537,7 +537,17 @@ document.addEventListener("DOMContentLoaded",function(e) {
         console.log("il me reste ces jetons : "+obj.jetonsRestant);
         // si il a deja poser des jetons sur le plateau il faudra rajouter un choix possible -> parier
 
-        if(obj.aPerdu){ console.log("je n'ai plus de jetons, j'ai perdu"); return;/* joueur suivant */}
+        let jSuivant=obj.joueurSuivant;
+        if(obj.aPerdu){
+            console.log("je n'ai plus de jetons, j'ai perdu");
+            for(let i=0;i<listeJoueursParPartie.length;i++){
+                if(listeJoueursParPartie[i][0]===obj.idPartie){
+                    //console.log("partie trouve");
+                    askingJetons(obj.idPartie,listeJoueursParPartie[i][1][jSuivant].pseudoUtilisateur);
+                }
+            }
+            return;/* joueur suivant */
+        }
         jetonsRestant=obj.jetonsRestant;
 
         if(jetonsRestant===null || jetonsRestant.length===0){
