@@ -871,25 +871,40 @@ document.addEventListener("DOMContentLoaded",function(e) {
 
     socket.on("retourneCrane",function(obj){
         console.log(obj);
-        let idPartie = obj.idPartie;
-        let pseudo = obj.pseudo;
-        let position = obj.position;
-        let spanJoueurCourant = document.querySelector("body #parties #divPartie"+idPartie+" .joueurCourant");
-        let spanIndication = document.querySelector("body #parties #divPartie"+idPartie+" .indication");
 
-        spanJoueurCourant.innerHTML = pseudo;
-        spanIndication.innerHTML = " a retourné un crane !";
+        vider(obj,"a retourné un crane !");
 
-
+        if(pseudo!==obj.pseudo){return;}
+        let objAEmit = {
+            "idPartie":obj.idPartie,
+            "joueurGagnantEnchere":obj.pseudo,
+            "joueurGagnantManche":null
+        };
+        socket.emit("prepareNextTurn",objAEmit);
     });
 
     socket.on("gagnePoint",function(obj){
         console.log(obj);
+
+        vider(obj, " a gagner un point !");
+        let gagnant = document.querySelector("body #parties #divPartie"+obj.idPartie+" .joueur:nth-of-type("+obj.position+") aside");
+        gagnant.className="etatJoueur carreRoses";
+
+        if(pseudo!==obj.pseudo){return;}
+        let objAEmit = {
+            "idPartie":obj.idPartie,
+            "joueurGagnantEnchere":obj.pseudo,
+            "joueurGagnantManche":obj.pseudo
+        };
+        socket.emit("prepareNextTurn",objAEmit);
+    });
+
+    function vider(obj, indication){
         let idPartie = obj.idPartie;
         let spanJoueurCourant = document.querySelector("body #parties #divPartie"+idPartie+" .joueurCourant");
         let spanIndication = document.querySelector("body #parties #divPartie"+idPartie+" .indication");
         spanJoueurCourant.innerHTML = obj.pseudo;
-        spanIndication.innerHTML = " a gagné un point !";
+        spanIndication.innerHTML = indication;
 
         let comptParis = document.querySelector("body #parties #divPartie"+idPartie +" .comptParis");
         if(comptParis !== null){
@@ -901,18 +916,7 @@ document.addEventListener("DOMContentLoaded",function(e) {
             let joueur = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+i+")");
             joueur.className="joueur";
         }
-
-        let gagnant = document.querySelector("body #parties #divPartie"+idPartie+" .joueur:nth-of-type("+obj.position+") aside");
-        gagnant.className="etatJoueur carreRoses";
-
-        if(pseudo!==obj.pseudo){return;}
-        let objAEmit = {
-            "idPartie":obj.idPartie,
-            "joueurGagnantEnchere":obj.pseudo,
-            "joueurGagnantManche":obj.pseudo
-        };
-        socket.emit("prepareNextTurn",objAEmit);
-    });
+    }
 
     socket.on("choixPremierJoueur",function(obj){
         console.log("choixPremierJoueur");

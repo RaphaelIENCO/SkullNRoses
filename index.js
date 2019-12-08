@@ -543,11 +543,12 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
         console.log("---------- prepareNextTurn");
         console.log(obj);
         let position=null;
+        let joueurGagnantEnchere=null;
         partieEnCours.forEach(function(partie){
             if(partie.getIdPartie()===obj.idPartie){
-                if(obj.joueurGagnantManche!==null){
-                    let joueurGagnantLaManche=  partie.getJoueurByName(obj.joueurGagnantManche);
-                    if(joueurGagnantLaManche.getNbPoints()===2){
+                joueurGagnantEnchere= partie.getJoueurByName(obj.joueurGagnantEnchere);
+                if(obj.joueurGagnantManche!==null){ // si le joueur gagne la manche
+                    if(joueurGagnantEnchere.getNbPoints()===2){
                         let objAEmit= {
                           "idPartie":obj.idPartie,
                           "gagnant":obj.joueurGagnantManche
@@ -555,8 +556,9 @@ io.on('connection', function (socket) { // socket = io.connect("....:8080");
                         emitToPartie("gagneLaPartie",objAEmit,obj.idPartie);
                         return;
                     }
-                    position=joueurGagnantLaManche.getPositionOnBoard();
                 }
+                position=joueurGagnantEnchere.getPositionOnBoard();
+
                 let setUpMancheSuivante = partie.setMancheSuivante();
                 console.log(setUpMancheSuivante);
                 let toSend = {
