@@ -416,10 +416,15 @@ document.addEventListener("DOMContentLoaded",function(e) {
             }
         }
         div.innerHTML+="<div class='containTour'><span class='joueurCourant'>"+listeJoueursDeLaPartie[obj.aQuiLeTour].pseudoUtilisateur+"</span><span class='indication'>"+indicationDebutTour+"</span> </div>";
+        if (('speechSynthesis' in window)){
+            let enonciation = new SpeechSynthesisUtterance(listeJoueursDeLaPartie[obj.aQuiLeTour].pseudoUtilisateur+indicationDebutTour);
+            window.speechSynthesis.speak(enonciation);
+        }
         div.innerHTML+="<div class='choix'></div>";
         div.innerHTML+="<div class='enchereStatut'></div>";
 
         div.appendChild(buttonCHAT);
+        if (!('speechSynthesis' in window)) alert("non supportée");
 
         button.addEventListener('click',function(){
             divParties.style.display = 'block';
@@ -531,7 +536,13 @@ document.addEventListener("DOMContentLoaded",function(e) {
             choix.innerHTML+="<div class=\"jeton roses\"></div><span class=\"nbRoses\">"+nbRoses+"</span>\n" +
                              "<div class=\"jeton skull\"></div><span class=\"nbSkulls\">"+nbSkulls+"</span>";
 
-            if(obj.readyPourEnchere){setUpForEnchere(obj);}
+            if(obj.readyPourEnchere){
+                setUpForEnchere(obj);
+                if (('speechSynthesis' in window)){
+                    let enonciation = new SpeechSynthesisUtterance(obj.pseudo+" vous pouvez aussi commencer les enchères.");
+                    window.speechSynthesis.speak(enonciation);
+                }
+            }
 
             let roses = document.querySelector("body #parties #divPartie"+obj.idPartie+" .choix .jeton.roses");
             let skull = document.querySelector("body #parties #divPartie"+obj.idPartie+" .choix .jeton.skull");
@@ -593,6 +604,10 @@ document.addEventListener("DOMContentLoaded",function(e) {
             }
         }
         spanIndication.innerHTML = " choisissez un disque à empiler";
+        if (('speechSynthesis' in window)){
+            let enonciation = new SpeechSynthesisUtterance(spanJoueurCourant.innerHTML+" "+spanIndication.innerHTML);
+            window.speechSynthesis.speak(enonciation);
+        }
 
         // au joueur suivant
         if(joueurQuiAPose!==pseudo){return;} // permet de faire le prochain emit qu'une fois
@@ -665,6 +680,10 @@ document.addEventListener("DOMContentLoaded",function(e) {
             }
         }
         spanIndication.innerHTML = " faites votre enchère !";
+        if (('speechSynthesis' in window)){
+            let enonciation = new SpeechSynthesisUtterance(spanJoueurCourant.innerHTML+" "+spanIndication.innerHTML);
+            window.speechSynthesis.speak(enonciation);
+        }
 
         // au joueur suivant
         if(obj.pseudo!==pseudo){return;} // permet de faire le prochain emit qu'une fois
@@ -681,6 +700,11 @@ document.addEventListener("DOMContentLoaded",function(e) {
         //console.log(obj.enchereLaPlusForte);
         spanJoueurCourant.innerHTML = obj.pseudo;
         spanIndication.innerHTML = " a gagné l'enchère avec "+ obj.enchereLaPlusForte.valeurEnchere +" !";
+
+        if (('speechSynthesis' in window)){
+            let enonciation = new SpeechSynthesisUtterance(spanJoueurCourant.innerHTML+" "+spanIndication.innerHTML);
+            window.speechSynthesis.speak(enonciation);
+        }
 
         let statutEnchere = document.querySelector("body #parties #divPartie"+obj.idPartie+" .enchereStatut");
         if(statutEnchere !== null){
@@ -753,17 +777,28 @@ document.addEventListener("DOMContentLoaded",function(e) {
         jCouche.className+=" cross";
 
         // au joueur suivant
-        if(obj.pseudo!==pseudo){return;}
+        //
         if(obj.nbJoueurEncoreEnListe===1){
             // le joueur à gagné la phase d'enchere car tlm s'est couché sauf lui
             let objAEmit = {
                 "idPartie": obj.idPartie
             };
+            if(obj.pseudo!==pseudo){return;}
             socket.emit("gagneEnchereParAbandon",objAEmit);
             return;
         }
+
         for(let i=0;i<listeJoueursParPartie.length;i++){
             if(listeJoueursParPartie[i][0]===obj.idPartie){
+                let spanJoueurCourant = document.querySelector("body #parties #divPartie"+obj.idPartie+" .joueurCourant");
+                let spanIndication = document.querySelector("body #parties #divPartie"+obj.idPartie+" .indication");
+                spanJoueurCourant.innerHTML = listeJoueursParPartie[i][1][obj.joueurSuivant].pseudoUtilisateur;
+                spanIndication.innerHTML = " faites votre enchère";
+                if (('speechSynthesis' in window)){
+                    let enonciation = new SpeechSynthesisUtterance(spanJoueurCourant.innerHTML+" "+spanIndication.innerHTML);
+                    window.speechSynthesis.speak(enonciation);
+                }
+                if(obj.pseudo!==pseudo){return;}
                 askingEncheres(obj.idPartie,listeJoueursParPartie[i][1][obj.joueurSuivant].pseudoUtilisateur);
             }
         }
@@ -780,9 +815,10 @@ document.addEventListener("DOMContentLoaded",function(e) {
 
     socket.on("returnSkipEnchere",function(obj){
         console.log("returnSkipEnchere");
-        if(obj.pseudo!==pseudo){return;}
+        //if(obj.pseudo!==pseudo){return;}
         for(let i=0;i<listeJoueursParPartie.length;i++){
             if(listeJoueursParPartie[i][0]===obj.idPartie){
+
                 askingEncheres(obj.idPartie,listeJoueursParPartie[i][1][obj.joueurSuivant].pseudoUtilisateur);
             }
         }
@@ -905,6 +941,10 @@ document.addEventListener("DOMContentLoaded",function(e) {
         let spanIndication = document.querySelector("body #parties #divPartie"+idPartie+" .indication");
         spanJoueurCourant.innerHTML = obj.pseudo;
         spanIndication.innerHTML = indication;
+        if (('speechSynthesis' in window)){
+            let enonciation = new SpeechSynthesisUtterance(spanJoueurCourant.innerHTML+" "+spanIndication.innerHTML);
+            window.speechSynthesis.speak(enonciation);
+        }
 
         let comptParis = document.querySelector("body #parties #divPartie"+idPartie +" .comptParis");
         if(comptParis !== null){
@@ -926,6 +966,10 @@ document.addEventListener("DOMContentLoaded",function(e) {
         let spanIndication = document.querySelector("body #parties #divPartie"+obj.idPartie+" .indication");
         spanJoueurCourant.innerHTML=obj.pseudo;
         spanIndication.innerHTML=" choisissez qui commencera lors du prochain tour.";
+        if (('speechSynthesis' in window)){
+            let enonciation = new SpeechSynthesisUtterance(spanJoueurCourant.innerHTML+" "+spanIndication.innerHTML);
+            window.speechSynthesis.speak(enonciation);
+        }
 
         if(pseudo!==obj.pseudo){return;}
         // ajouter listner a tout les footer de joueur
@@ -956,6 +1000,10 @@ document.addEventListener("DOMContentLoaded",function(e) {
 
         spanJoueurCourant.innerHTML = obj.pseudo;
         spanIndication.innerHTML = " choisissez un disque à empiler";
+        if (('speechSynthesis' in window)){
+            let enonciation = new SpeechSynthesisUtterance(spanJoueurCourant.innerHTML+" "+spanIndication.innerHTML);
+            window.speechSynthesis.speak(enonciation);
+        }
 
         // on met a jour les nb de jetons
         let nbJetonsRestant;
@@ -988,5 +1036,21 @@ document.addEventListener("DOMContentLoaded",function(e) {
 
         spanJoueurCourant.innerHTML = obj.gagnant;
         spanIndication.innerHTML = " gagne la partie !";
+        if (('speechSynthesis' in window)){
+            let enonciation = new SpeechSynthesisUtterance(spanJoueurCourant.innerHTML+" "+spanIndication.innerHTML);
+            window.speechSynthesis.speak(enonciation);
+        }
+
     });
+
+    function updateIndication(idPartie,indication,pseudo){
+        let spanJoueurCourant = document.querySelector("body #parties #divPartie"+idPartie+" .joueurCourant");
+        let spanIndication = document.querySelector("body #parties #divPartie"+idPartie+" .indication");
+        spanJoueurCourant.innerHTML = pseudo;
+        spanIndication.innerHTML = indication;
+        if (('speechSynthesis' in window)){
+            let enonciation = new SpeechSynthesisUtterance(spanJoueurCourant.innerHTML+" "+spanIndication.innerHTML);
+            window.speechSynthesis.speak(enonciation);
+        }
+    }
 });
